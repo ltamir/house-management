@@ -49,3 +49,6 @@ export type BuildingData = {
 }
 
 export type CollectionName = keyof BuildingData
+
+export type Page = 'overview' | 'tenants' | 'apartments' | 'payments' | 'expenses' | 'issues'
+export type CollectionPage = Exclude<Page, 'overview'>
