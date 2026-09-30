@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Droplets, X, Zap } from 'lucide-react'
+import { Droplets, Pencil, X, Zap } from 'lucide-react'
 import type { Apartment, Payment, Tenant, UtilityKind, UtilityPayment } from '../types'
 import { formatDate, formatMoney, today } from '../lib/formatters'
 
@@ -10,10 +10,12 @@ type ApartmentDetailsModalProps = {
   utilities: Record<UtilityKind, UtilityPayment[]>
   onClose: () => void
   onAddUtilityPayment: (type: UtilityKind, values: Omit<UtilityPayment, 'id' | 'apartmentId' | 'createdAt'>) => void
+  onUpdateUtilityPayment: (type: UtilityKind, id: string, values: Omit<UtilityPayment, 'id' | 'apartmentId' | 'createdAt'>) => void
 }
 
-export default function ApartmentDetailsModal({ apartment, tenants, committeePayments, utilities, onClose, onAddUtilityPayment }: ApartmentDetailsModalProps) {
+export default function ApartmentDetailsModal({ apartment, tenants, committeePayments, utilities, onClose, onAddUtilityPayment, onUpdateUtilityPayment }: ApartmentDetailsModalProps) {
   const [activeTab, setActiveTab] = useState<UtilityKind>('water')
+  const [editingPaymentId, setEditingPaymentId] = useState<string | null>(null)
   const [amount, setAmount] = useState('')
   const [meterReading, setMeterReading] = useState('')
   const [fromDate, setFromDate] = useState(today)
@@ -28,21 +30,39 @@ export default function ApartmentDetailsModal({ apartment, tenants, committeePay
   const utilityLabel = activeTab === 'water' ? 'מים' : 'חשמל'
   const meterUnit = activeTab === 'water' ? 'מ״ק' : 'קוט״ש'
 
+  function resetForm() {
+    setEditingPaymentId(null)
+    setAmount('')
+    setMeterReading('')
+    setFromDate(today())
+    setToDate(today())
+    setError('')
+  }
+
+  function editPayment(payment: UtilityPayment) {
+    setEditingPaymentId(payment.id)
+    setAmount(String(payment.amount))
+    setMeterReading(String(payment.meterReading))
+    setFromDate(payment.fromDate)
+    setToDate(payment.toDate)
+    setError('')
+  }
+
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (toDate < fromDate) {
       setError('תאריך הסיום צריך להיות אחרי תאריך ההתחלה')
       return
     }
-    onAddUtilityPayment(activeTab, {
+    const values = {
       amount: Number(amount),
       meterReading: Number(meterReading),
       fromDate,
       toDate,
-    })
-    setAmount('')
-    setMeterReading('')
-    setError('')
+    }
+    if (editingPaymentId) onUpdateUtilityPayment(activeTab, editingPaymentId, values)
+    else onAddUtilityPayment(activeTab, values)
+    resetForm()
   }
 
   return <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
@@ -58,12 +78,12 @@ export default function ApartmentDetailsModal({ apartment, tenants, committeePay
       <div className="apartment-total"><span>תשלומי ועד ששולמו</span><strong>{formatMoney(paidCommitteeTotal)}</strong><small>{committeePayments.filter((payment) => payment.status === 'שולם').length} תשלומים</small></div>
 
       <div className="utility-tabs" role="tablist" aria-label="חשבונות דירה">
-        <button type="button" role="tab" aria-selected={activeTab === 'water'} className={activeTab === 'water' ? 'utility-tab utility-tab-active' : 'utility-tab'} onClick={() => setActiveTab('water')}><Droplets size={16} />מים</button>
-        <button type="button" role="tab" aria-selected={activeTab === 'electricity'} className={activeTab === 'electricity' ? 'utility-tab utility-tab-active' : 'utility-tab'} onClick={() => setActiveTab('electricity')}><Zap size={16} />חשמל</button>
+        <button type="button" role="tab" aria-selected={activeTab === 'water'} className={activeTab === 'water' ? 'utility-tab utility-tab-active' : 'utility-tab'} onClick={() => { setActiveTab('water'); resetForm() }}><Droplets size={16} />מים</button>
+        <button type="button" role="tab" aria-selected={activeTab === 'electricity'} className={activeTab === 'electricity' ? 'utility-tab utility-tab-active' : 'utility-tab'} onClick={() => { setActiveTab('electricity'); resetForm() }}><Zap size={16} />חשמל</button>
       </div>
 
       <form className="utility-form" onSubmit={submit}>
-        <div className="utility-form-heading"><strong>הוספת חשבון {utilityLabel}</strong><span>הקריאה הנוכחית: {meterUnit}</span></div>
+        <div className="utility-form-heading"><strong>{editingPaymentId ? 'עריכת' : 'הוספת'} חשבון {utilityLabel}</strong><span>הקריאה הנוכחית: {meterUnit}</span></div>
         <div className="utility-form-fields">
           <label className="form-field"><span>סכום (₪) *</span><input type="number" min="0.01" step="0.01" required value={amount} onChange={(event) => setAmount(event.target.value)} /></label>
           <label className="form-field"><span>קריאת מונה ({meterUnit}) *</span><input type="number" min="0" step="any" required value={meterReading} onChange={(event) => setMeterReading(event.target.value)} /></label>
@@ -71,12 +91,12 @@ export default function ApartmentDetailsModal({ apartment, tenants, committeePay
           <label className="form-field"><span>עד תאריך *</span><input type="date" required value={toDate} onChange={(event) => setToDate(event.target.value)} /></label>
         </div>
         {error && <div className="form-error" role="alert">{error}</div>}
-        <div className="utility-form-actions"><button type="submit" className="primary-button">הוספת חשבון</button></div>
+        <div className="utility-form-actions">{editingPaymentId && <button type="button" className="secondary-button" onClick={resetForm}>ביטול עריכה</button>}<button type="submit" className="primary-button">{editingPaymentId ? 'שמירת שינויים' : 'הוספת חשבון'}</button></div>
       </form>
 
       <section className="utility-history" aria-live="polite">
         <div className="utility-history-heading"><h3>חשבונות {utilityLabel}</h3><span>{apartmentPayments.length} רשומות</span></div>
-        {apartmentPayments.length ? <div className="table-wrap"><table className="utility-table"><thead><tr><th>תקופה</th><th>קריאת מונה</th><th>סכום</th></tr></thead><tbody>{apartmentPayments.map((payment) => <tr key={payment.id}><td>{formatDate(payment.fromDate)} – {formatDate(payment.toDate)}</td><td>{payment.meterReading.toLocaleString('he-IL')} {meterUnit}</td><td className="money-cell">{formatMoney(payment.amount)}</td></tr>)}</tbody></table></div> : <p className="utility-empty">אין עדיין חשבונות {utilityLabel} לדירה הזו.</p>}
+        {apartmentPayments.length ? <div className="utility-history-scroll"><table className="utility-table"><thead><tr><th>תקופה</th><th>קריאת מונה</th><th>סכום</th><th>פעולות</th></tr></thead><tbody>{apartmentPayments.map((payment) => <tr key={payment.id}><td>{formatDate(payment.fromDate)} – {formatDate(payment.toDate)}</td><td>{payment.meterReading.toLocaleString('he-IL')} {meterUnit}</td><td className="money-cell">{formatMoney(payment.amount)}</td><td><button type="button" className="utility-row-edit" aria-label={`עריכת חשבון ${formatDate(payment.fromDate)}`} title="עריכת חשבון" onClick={() => editPayment(payment)}><Pencil size={14} /></button></td></tr>)}</tbody></table></div> : <p className="utility-empty">אין עדיין חשבונות {utilityLabel} לדירה הזו.</p>}
       </section>
     </section>
   </div>

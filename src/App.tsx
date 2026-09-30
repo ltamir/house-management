@@ -18,6 +18,7 @@ export default function App() {
     addRecord,
     updateRecord,
     addUtilityPayment,
+    updateUtilityPayment,
     deleteRecord,
     currentMonthPayments,
     openIssues,
@@ -81,6 +82,7 @@ export default function App() {
       utilities={building.utilities}
       onClose={() => setViewedApartment(null)}
       onAddUtilityPayment={(type, values) => addUtilityPayment(type, viewedApartment.id, values)}
+      onUpdateUtilityPayment={(type, id, values) => updateUtilityPayment(type, id, values)}
     />}
     {notice && <div className="toast" role="status"><span aria-hidden="true">✓</span>{notice}</div>}
   </>

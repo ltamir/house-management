@@ -34,6 +34,16 @@ export function useBuildingData() {
     }))
   }
 
+  function updateUtilityPayment(type: UtilityKind, id: string, values: Omit<BuildingData['utilities']['water'][number], 'id' | 'apartmentId' | 'createdAt'>) {
+    setBuilding((previous) => ({
+      ...previous,
+      utilities: {
+        ...previous.utilities,
+        [type]: previous.utilities[type].map((payment) => payment.id === id ? { ...payment, ...values } : payment),
+      },
+    }))
+  }
+
   function deleteRecord(collection: CollectionName, id: string) {
     setBuilding((previous) => ({ ...previous, [collection]: previous[collection].filter((record) => record.id !== id) }))
   }
@@ -47,5 +57,5 @@ export function useBuildingData() {
     return apartment ? `דירה ${apartment.number}` : 'שטח משותף'
   }
 
-  return { building, addRecord, updateRecord, addUtilityPayment, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getTenantName, getApartmentName }
+  return { building, addRecord, updateRecord, addUtilityPayment, updateUtilityPayment, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getTenantName, getApartmentName }
 }
