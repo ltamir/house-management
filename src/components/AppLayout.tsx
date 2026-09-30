@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { Building2, CalendarDays, ChevronLeft, House, Menu, Plus } from 'lucide-react'
-import { navigationItems, pageTitles, singularLabels } from '../config/recordForms'
+import { isCollectionPage, navigationItems, pageTitles, singularLabels } from '../config/recordForms'
 import type { CollectionPage, Page } from '../types'
 
 type AppLayoutProps = {
@@ -57,7 +57,7 @@ export default function AppLayout({ page, openIssuesCount, apartmentCount, child
         <div className="content-area">
           <div className="page-heading">
             <div><div className="eyebrow">ניהול בניין <span /> לוח בקרה</div><h1>{pageInfo.title}</h1><p>{pageInfo.subtitle}</p></div>
-            {page !== 'overview' && <button className="primary-button" onClick={() => onAdd(page)}><Plus size={17} />{`הוספת ${singularLabels[page]}`}</button>}
+            {isCollectionPage(page) && <button className="primary-button" onClick={() => onAdd(page)}><Plus size={17} />{`הוספת ${singularLabels[page]}`}</button>}
           </div>
           {children}
         </div>

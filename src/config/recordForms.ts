@@ -1,5 +1,6 @@
 import {
   DoorOpen,
+  ArrowLeftRight,
   FileText,
   LayoutDashboard,
   Users,
@@ -19,6 +20,7 @@ export type FieldDefinition = {
 
 export const navigationItems: { id: Page; label: string; icon: LucideIcon }[] = [
   { id: 'overview', label: 'סקירה כללית', icon: LayoutDashboard },
+  { id: 'transactions', label: 'תנועות', icon: ArrowLeftRight },
   { id: 'tenants', label: 'דיירים', icon: Users },
   { id: 'apartments', label: 'דירות', icon: DoorOpen },
   { id: 'payments', label: 'תשלומים', icon: Wallet },
@@ -28,6 +30,7 @@ export const navigationItems: { id: Page; label: string; icon: LucideIcon }[] = 
 
 export const pageTitles: Record<Page, { title: string; subtitle: string }> = {
   overview: { title: 'סקירה כללית', subtitle: 'הבית מתנהל טוב יותר כשכולם מעודכנים.' },
+  transactions: { title: 'תנועות', subtitle: 'כל התקבולים וההוצאות, עם יתרה מצטברת.' },
   tenants: { title: 'הדיירים שלנו', subtitle: 'אנשי הקשר והדיירים בבניין.' },
   apartments: { title: 'הדירות בבניין', subtitle: 'תפוסה, דיירים ופרטי הדירות.' },
   payments: { title: 'תשלומים', subtitle: 'מעקב אחר תשלומי ועד הבית.' },
@@ -69,4 +72,8 @@ export const recordForms: Record<CollectionPage, { collection: CollectionName; f
     { name: 'priority', label: 'דחיפות', options: [{ value: 'רגילה', label: 'רגילה' }, { value: 'דחופה', label: 'דחופה' }] },
     { name: 'status', label: 'סטטוס טיפול', options: [{ value: 'פתוחה', label: 'פתוחה' }, { value: 'בטיפול', label: 'בטיפול' }, { value: 'טופלה', label: 'טופלה' }] },
   ] },
+}
+
+export function isCollectionPage(page: Page): page is CollectionPage {
+  return page !== 'overview' && page !== 'transactions'
 }

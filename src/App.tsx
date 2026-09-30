@@ -4,6 +4,7 @@ import ApartmentDetailsModal from './components/ApartmentDetailsModal'
 import RecordModal from './components/RecordModal'
 import OverviewPage from './pages/OverviewPage'
 import CollectionPageView from './pages/CollectionPage'
+import TransactionsPage from './pages/TransactionsPage'
 import { useBuildingData } from './hooks/useBuildingData'
 import { useNotice } from './hooks/useNotice'
 import type { Apartment, BuildingRecord, CollectionPage, Page } from './types'
@@ -61,6 +62,10 @@ export default function App() {
         getApartmentName={getApartmentName}
         getTenantName={getTenantName}
         onNavigate={setPage}
+        onAdd={openForm}
+      /> : page === 'transactions' ? <TransactionsPage
+        building={building}
+        getTenantName={getTenantName}
         onAdd={openForm}
       /> : <CollectionPageView
         page={page}

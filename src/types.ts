@@ -67,5 +67,5 @@ export type CollectionName = Exclude<keyof BuildingData, 'utilities'>
 
 export type BuildingRecord = Tenant | Apartment | Payment | Expense | Issue
 
-export type Page = 'overview' | 'tenants' | 'apartments' | 'payments' | 'expenses' | 'issues'
-export type CollectionPage = Exclude<Page, 'overview'>
+export type Page = 'overview' | 'transactions' | 'tenants' | 'apartments' | 'payments' | 'expenses' | 'issues'
+export type CollectionPage = Exclude<Page, 'overview' | 'transactions'>
