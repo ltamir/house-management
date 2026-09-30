@@ -31,6 +31,7 @@ export default function RecordModal({ page, building, monthlyPaymentAmount, reco
         : page === 'payments' && field.name === 'amount' && monthlyPaymentAmount > 0 ? String(monthlyPaymentAmount)
         : field.type === 'date' ? today()
           : field.type === 'month' ? monthNow()
+            : field.type === 'checkbox' ? 'false'
             : ['status', 'priority', 'category'].includes(field.name) ? field.options?.[0]?.value || ''
               : '',
     ]))
@@ -49,7 +50,7 @@ export default function RecordModal({ page, building, monthlyPaymentAmount, reco
 
   return <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}><section className="form-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div className="modal-header"><div><span className="modal-eyebrow">הבית שלנו · ניהול בניין</span><h2 id="modal-title">{record ? 'עריכת' : 'הוספת'} {singularLabels[page]}</h2></div><button className="icon-button close-button" onClick={onClose} aria-label="סגירה"><X size={20} /></button></div>
-    <form onSubmit={submit}><div className="form-fields">{fields.map((field) => <label className="form-field" key={field.name}><span>{field.label}{field.required && <b> *</b>}</span>{field.options ? <select required={field.required} value={values[field.name]} onChange={(event) => setValues({ ...values, [field.name]: event.target.value })}><option value="">בחירה...</option>{field.options.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}</select> : <input type={field.type || 'text'} required={field.required} min={field.type === 'number' ? 0 : undefined} step={field.type === 'number' ? 'any' : undefined} value={values[field.name]} onChange={(event) => setValues({ ...values, [field.name]: event.target.value })} />}</label>)}</div>
+    <form onSubmit={submit}><div className="form-fields">{fields.map((field) => <label className={field.type === 'checkbox' ? 'form-field form-field-toggle' : 'form-field'} key={field.name}><span>{field.label}{field.required && <b> *</b>}</span>{field.type === 'checkbox' ? <input type="checkbox" checked={values[field.name] === 'true'} onChange={(event) => setValues({ ...values, [field.name]: String(event.target.checked) })} /> : field.options ? <select required={field.required} value={values[field.name]} onChange={(event) => setValues({ ...values, [field.name]: event.target.value })}><option value="">בחירה...</option>{field.options.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}</select> : <input type={field.type || 'text'} required={field.required} min={field.type === 'number' ? 0 : undefined} step={field.type === 'number' ? 'any' : undefined} value={values[field.name]} onChange={(event) => setValues({ ...values, [field.name]: event.target.value })} />}</label>)}</div>
       {error && <div className="form-error" role="alert">{error}</div>}<div className="modal-actions"><button type="button" className="secondary-button" onClick={onClose}>ביטול</button><button type="submit" className="primary-button"><Check size={16} />שמירה</button></div></form>
   </section></div>
 }

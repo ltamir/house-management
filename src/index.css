@@ -100,6 +100,7 @@ td { height: 51px; padding: 7px 14px; border-top: 1px solid #f0f1ed; color: #777
 .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border-radius: 10px; font-size: 9px; }
 .status-badge > span { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 .status-good { color: #518161; background: #eef5ef; }.status-waiting { color: #a17a3e; background: #f8f3e9; }.status-progress { color: #577b91; background: #edf3f6; }
+.owner-badge { display: inline-block; padding: 3px 7px; border-radius: 10px; color: #47765e; background: #edf3ee; font-size: 9px; font-weight: 600; }
 .round-add { width: 29px; height: 29px; display: grid; place-items: center; border: 1px solid #e6ebe4; border-radius: 50%; background: #fff; color: #4d765a; cursor: pointer; }
 .round-add:hover { background: #edf3ee; }
 .issue-list { padding: 0 16px; }
@@ -218,6 +219,12 @@ td { height: 51px; padding: 7px 14px; border-top: 1px solid #f0f1ed; color: #777
 .icon-button:hover { background: #f2f4ef; color: #3d6148; }
 .form-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px 12px; }
 .form-field { min-width: 0; display: grid; gap: 5px; }
+.form-field-toggle { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; min-height: 42px; padding: 0 10px; border: 1px solid #e5e8e1; border-radius: 5px; }
+.form-field-toggle > span { color: #656e67; font-size: 10px; font-weight: 500; }
+.form-field-toggle input[type='checkbox'] { position: relative; flex: none; width: 36px; height: 20px; margin: 0; padding: 0; appearance: none; border: 0; border-radius: 12px; background: #dfe3dd; cursor: pointer; transition: background .15s ease; }
+.form-field-toggle input[type='checkbox']::after { content: ''; position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.12); transition: transform .15s ease; }
+.form-field-toggle input[type='checkbox']:checked { background: #47765e; }
+.form-field-toggle input[type='checkbox']:checked::after { transform: translateX(-16px); }
 .form-field > span { color: #656e67; font-size: 10px; font-weight: 500; }.form-field > span b { color: #bd7658; }
 .form-field input, .form-field select { width: 100%; height: 37px; padding: 0 9px; border: 1px solid #e5e8e1; border-radius: 5px; outline: 0; color: #39413a; background: #fff; font-size: 11px; }
 .form-field input:focus, .form-field select:focus { border-color: #8eae91; }

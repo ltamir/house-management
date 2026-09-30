@@ -4,6 +4,7 @@ export type Tenant = {
   phone: string
   email: string
   apartmentId: string
+  isOwner: boolean
 }
 
 export type Apartment = {

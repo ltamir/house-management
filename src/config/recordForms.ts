@@ -50,6 +50,7 @@ export const recordForms: Record<CollectionPage, { collection: CollectionName; f
   tenants: { collection: 'tenants', fields: [
     { name: 'name', label: 'שם מלא', required: true }, { name: 'phone', label: 'טלפון', type: 'tel', required: true },
     { name: 'email', label: 'דוא״ל', type: 'email' }, { name: 'apartmentId', label: 'דירה', options: [] },
+    { name: 'isOwner', label: 'בעל/ת הדירה', type: 'checkbox' },
   ] },
   apartments: { collection: 'apartments', fields: [
     { name: 'number', label: 'מספר דירה', required: true }, { name: 'floor', label: 'קומה', type: 'number', required: true },

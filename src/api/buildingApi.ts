@@ -21,7 +21,10 @@ export function loadBuilding(): BuildingData {
     const parsed = JSON.parse(saved) as Partial<BuildingData>
     return {
       monthlyPaymentAmount: typeof parsed.monthlyPaymentAmount === 'number' && Number.isFinite(parsed.monthlyPaymentAmount) ? parsed.monthlyPaymentAmount : 0,
-      tenants: Array.isArray(parsed.tenants) ? parsed.tenants : [],
+      tenants: Array.isArray(parsed.tenants) ? parsed.tenants.map((tenant) => ({
+        ...tenant,
+        isOwner: tenant.isOwner === true,
+      })) : [],
       apartments: Array.isArray(parsed.apartments) ? parsed.apartments : [],
       payments: Array.isArray(parsed.payments) ? parsed.payments : [],
       expenses: Array.isArray(parsed.expenses) ? parsed.expenses : [],
@@ -59,7 +62,7 @@ export function createBuildingRecord(page: CollectionPage, values: Record<string
   const collection = recordForms[page].collection
   let record: Tenant | Apartment | Payment | Expense | Issue
 
-  if (collection === 'tenants') record = { id, name: values.name, phone: values.phone, email: values.email, apartmentId: values.apartmentId }
+  if (collection === 'tenants') record = { id, name: values.name, phone: values.phone, email: values.email, apartmentId: values.apartmentId, isOwner: values.isOwner === 'true' }
   else if (collection === 'apartments') record = { id, number: values.number, floor: values.floor, rooms: values.rooms }
   else if (collection === 'payments') record = { id, tenantId: values.tenantId, month: values.month, amount: Number(values.amount), date: values.date || today(), status: (values.status || 'ממתין') as Payment['status'] }
   else if (collection === 'expenses') record = { id, title: values.title, category: values.category || 'אחר', amount: Number(values.amount), date: values.date, vendor: values.vendor }
