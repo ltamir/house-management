@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import AppLayout from './components/AppLayout'
 import ApartmentDetailsModal from './components/ApartmentDetailsModal'
+import BuildingSettingsModal from './components/BuildingSettingsModal'
 import RecordModal from './components/RecordModal'
 import OverviewPage from './pages/OverviewPage'
 import CollectionPageView from './pages/CollectionPage'
@@ -13,6 +14,7 @@ export default function App() {
   const [page, setPage] = useState<Page>('overview')
   const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord } | null>(null)
   const [viewedApartment, setViewedApartment] = useState<Apartment | null>(null)
+  const [buildingSettingsOpen, setBuildingSettingsOpen] = useState(false)
   const { notice, showNotice } = useNotice()
   const {
     building,
@@ -20,6 +22,7 @@ export default function App() {
     updateRecord,
     addUtilityPayment,
     updateUtilityPayment,
+    updateMonthlyPaymentAmount,
     deleteRecord,
     currentMonthPayments,
     openIssues,
@@ -52,7 +55,7 @@ export default function App() {
   }
 
   return <>
-    <AppLayout page={page} openIssuesCount={openIssues.length} apartmentCount={building.apartments.length} onNavigate={setPage} onAdd={openForm}>
+    <AppLayout page={page} openIssuesCount={openIssues.length} apartmentCount={building.apartments.length} monthlyPaymentAmount={building.monthlyPaymentAmount} onNavigate={setPage} onAdd={openForm} onEditBuilding={() => setBuildingSettingsOpen(true)}>
       {page === 'overview' ? <OverviewPage
         building={building}
         currentMonthPayments={currentMonthPayments}
@@ -78,7 +81,12 @@ export default function App() {
         onAdd={() => openForm(page)}
       />}
     </AppLayout>
-    {modal && <RecordModal key={`${modal.page}-${modal.record?.id || 'new'}`} page={modal.page} building={building} record={modal.record} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
+    {modal && <RecordModal key={`${modal.page}-${modal.record?.id || 'new'}`} page={modal.page} building={building} monthlyPaymentAmount={building.monthlyPaymentAmount} record={modal.record} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
+    {buildingSettingsOpen && <BuildingSettingsModal
+      monthlyPaymentAmount={building.monthlyPaymentAmount}
+      onClose={() => setBuildingSettingsOpen(false)}
+      onSave={(amount) => { updateMonthlyPaymentAmount(amount); setBuildingSettingsOpen(false); showNotice('התשלום החודשי עודכן') }}
+    />}
     {viewedApartment && <ApartmentDetailsModal
       key={viewedApartment.id}
       apartment={viewedApartment}

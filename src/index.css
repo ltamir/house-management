@@ -35,9 +35,11 @@ button:disabled { opacity: .46; cursor: not-allowed; }
 .sidebar-bottom { margin-top: auto; }
 .building-card { display: flex; align-items: center; gap: 10px; margin: 0 2px 16px; padding: 12px 11px; border: 1px solid #ebeee8; border-radius: 8px; }
 .building-card-icon { width: 32px; height: 32px; display: grid; place-items: center; color: #47765e; background: #edf3ee; border-radius: 8px; }
-.building-card span:last-child { display: grid; gap: 2px; }
+.building-card span:nth-child(2) { min-width: 0; flex: 1; display: grid; gap: 2px; }
 .building-card strong { font-size: 12px; font-weight: 600; }
-.building-card small { color: #969c97; font-size: 10px; }
+.building-card small { overflow: hidden; color: #969c97; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+.building-settings-button { width: 28px; height: 28px; display: grid; flex: none; place-items: center; border: 0; border-radius: 5px; color: #8a948b; background: transparent; cursor: pointer; }
+.building-settings-button:hover { color: #47765e; background: #edf3ee; }
 .privacy-note { display: flex; align-items: center; gap: 7px; padding: 0 4px; color: #8a928b; font-size: 10px; }
 .privacy-dot, .live-dot { width: 7px; height: 7px; display: inline-block; flex: none; border-radius: 50%; background: #69a27a; }
 
@@ -166,6 +168,9 @@ td { height: 51px; padding: 7px 14px; border-top: 1px solid #f0f1ed; color: #777
 
 .modal-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(28,37,30,.34); backdrop-filter: blur(3px); animation: fade-in .16s ease both; }
 .form-modal { width: min(440px,100%); max-height: min(690px,calc(100vh - 32px)); overflow: auto; padding: 21px 22px 17px; border: 1px solid #e8eae4; border-radius: 9px; background: #fff; box-shadow: 0 17px 65px rgba(33,45,35,.17); animation: modal-in .2s ease both; }
+.building-settings-modal { width: min(400px,100%); }
+.building-settings-hint { margin-top: 8px; color: #929990; font-size: 10px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .apartment-details-modal { width: min(700px,100%); padding: 22px 24px 19px; }
 .apartment-summary { display: grid; grid-template-columns: .6fr .6fr 1.8fr; gap: 15px; padding: 3px 0 14px; border-bottom: 1px solid #eff0eb; }
 .apartment-summary > div { min-width: 0; display: grid; gap: 3px; }

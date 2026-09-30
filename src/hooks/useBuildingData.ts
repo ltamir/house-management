@@ -18,6 +18,10 @@ export function useBuildingData() {
     setBuilding((previous) => ({ ...previous, [collection]: [...previous[collection], record] }))
   }
 
+  function updateMonthlyPaymentAmount(amount: number) {
+    setBuilding((previous) => ({ ...previous, monthlyPaymentAmount: amount }))
+  }
+
   function updateRecord(page: CollectionPage, id: string, values: Record<string, string>) {
     const { collection, record } = createBuildingRecord(page, values, id)
     setBuilding((previous) => ({
@@ -57,5 +61,5 @@ export function useBuildingData() {
     return apartment ? `דירה ${apartment.number}` : 'שטח משותף'
   }
 
-  return { building, addRecord, updateRecord, addUtilityPayment, updateUtilityPayment, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getTenantName, getApartmentName }
+  return { building, addRecord, updateRecord, updateMonthlyPaymentAmount, addUtilityPayment, updateUtilityPayment, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getTenantName, getApartmentName }
 }

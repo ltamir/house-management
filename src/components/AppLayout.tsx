@@ -1,18 +1,21 @@
 import { useState, type ReactNode } from 'react'
-import { Building2, CalendarDays, ChevronLeft, House, Menu, Plus } from 'lucide-react'
+import { Building2, CalendarDays, ChevronLeft, House, Menu, Pencil, Plus } from 'lucide-react'
 import { isCollectionPage, navigationItems, pageTitles, singularLabels } from '../config/recordForms'
+import { formatMoney } from '../lib/formatters'
 import type { CollectionPage, Page } from '../types'
 
 type AppLayoutProps = {
   page: Page
   openIssuesCount: number
   apartmentCount: number
+  monthlyPaymentAmount: number
   children: ReactNode
   onNavigate: (page: Page) => void
   onAdd: (page: CollectionPage) => void
+  onEditBuilding: () => void
 }
 
-export default function AppLayout({ page, openIssuesCount, apartmentCount, children, onNavigate, onAdd }: AppLayoutProps) {
+export default function AppLayout({ page, openIssuesCount, apartmentCount, monthlyPaymentAmount, children, onNavigate, onAdd, onEditBuilding }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pageInfo = pageTitles[page]
 
@@ -41,7 +44,8 @@ export default function AppLayout({ page, openIssuesCount, apartmentCount, child
         <div className="sidebar-bottom">
           <div className="building-card">
             <span className="building-card-icon"><Building2 size={17} /></span>
-            <span><strong>הבניין שלי</strong><small>{apartmentCount} דירות רשומות</small></span>
+            <span><strong>הבניין שלי</strong><small>{apartmentCount} דירות · {monthlyPaymentAmount > 0 ? `${formatMoney(monthlyPaymentAmount)} לחודש` : 'תשלום חודשי לא הוגדר'}</small></span>
+            <button type="button" className="building-settings-button" aria-label="עריכת תשלום חודשי לבניין" title="עריכת תשלום חודשי לבניין" onClick={onEditBuilding}><Pencil size={14} /></button>
           </div>
           <div className="privacy-note"><span className="privacy-dot" />הנתונים שמורים במכשיר הזה בלבד</div>
         </div>

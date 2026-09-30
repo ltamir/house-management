@@ -55,6 +55,7 @@ export type UtilityPayment = {
 export type ApartmentUtilities = Record<UtilityKind, UtilityPayment[]>
 
 export type BuildingData = {
+  monthlyPaymentAmount: number
   tenants: Tenant[]
   apartments: Apartment[]
   payments: Payment[]

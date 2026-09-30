@@ -8,12 +8,13 @@ import { singularLabels } from '../config/recordForms'
 type RecordModalProps = {
   page: CollectionPage
   building: BuildingData
+  monthlyPaymentAmount: number
   record?: BuildingRecord
   onClose: () => void
   onSubmit: (values: Record<string, string>) => void
 }
 
-export default function RecordModal({ page, building, record, onClose, onSubmit }: RecordModalProps) {
+export default function RecordModal({ page, building, monthlyPaymentAmount, record, onClose, onSubmit }: RecordModalProps) {
   const fields = recordForms[page].fields.map((field) => ({
     ...field,
     options: field.name === 'apartmentId'
@@ -27,6 +28,7 @@ export default function RecordModal({ page, building, record, onClose, onSubmit 
     return Object.fromEntries(fields.map((field) => [
       field.name,
       recordValues?.[field.name] !== undefined ? String(recordValues[field.name])
+        : page === 'payments' && field.name === 'amount' && monthlyPaymentAmount > 0 ? String(monthlyPaymentAmount)
         : field.type === 'date' ? today()
           : field.type === 'month' ? monthNow()
             : ['status', 'priority', 'category'].includes(field.name) ? field.options?.[0]?.value || ''

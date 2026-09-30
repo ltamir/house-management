@@ -5,6 +5,7 @@ import { makeId, today } from '../lib/formatters'
 const STORAGE_KEY = 'beitenu-building-data-v1'
 
 const emptyBuilding: BuildingData = {
+  monthlyPaymentAmount: 0,
   tenants: [],
   apartments: [],
   payments: [],
@@ -19,6 +20,7 @@ export function loadBuilding(): BuildingData {
     if (!saved) return emptyBuilding
     const parsed = JSON.parse(saved) as Partial<BuildingData>
     return {
+      monthlyPaymentAmount: typeof parsed.monthlyPaymentAmount === 'number' && Number.isFinite(parsed.monthlyPaymentAmount) ? parsed.monthlyPaymentAmount : 0,
       tenants: Array.isArray(parsed.tenants) ? parsed.tenants : [],
       apartments: Array.isArray(parsed.apartments) ? parsed.apartments : [],
       payments: Array.isArray(parsed.payments) ? parsed.payments : [],
