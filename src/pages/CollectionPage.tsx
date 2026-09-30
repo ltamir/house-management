@@ -6,6 +6,8 @@ import { collectionNames, singularLabels } from '../config/recordForms'
 import type { Apartment, BuildingData, BuildingRecord, CollectionName, CollectionPage, Expense, Issue, Payment, Tenant } from '../types'
 import { formatDate, formatMoney, formatMonth } from '../lib/formatters'
 
+const apartmentNumberCollator = new Intl.Collator('he', { numeric: true, sensitivity: 'base' })
+
 type CollectionPageProps = {
   page: CollectionPage
   building: BuildingData
@@ -37,12 +39,34 @@ export default function CollectionPageView({ page, building, getApartmentName, g
   }
   const emptyIcon = page === 'tenants' ? Users : page === 'apartments' ? DoorOpen : page === 'payments' ? Wallet : page === 'expenses' ? ClipboardList : CircleHelp
 
+  if (page === 'apartments') {
+    const currentYear = String(new Date().getFullYear())
+    const apartments = (filtered as Apartment[]).sort((first, second) => apartmentNumberCollator.compare(first.number, second.number))
+
+    return <section className="panel collection-panel apartment-collection-panel">
+      <div className="collection-toolbar"><div className="record-count">{filtered.length} דירות</div><label className="search-box"><Search size={16} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="חיפוש..." aria-label="חיפוש בדירות" /></label></div>
+      {apartments.length ? <div className="apartments-grid">{apartments.map((apartment) => {
+        const tenantIds = new Set(building.tenants.filter((tenant) => tenant.apartmentId === apartment.id).map((tenant) => tenant.id))
+        const tenants = building.tenants.filter((tenant) => tenantIds.has(tenant.id))
+        const annualPaidTotal = building.payments
+          .filter((payment) => tenantIds.has(payment.tenantId) && payment.status === 'שולם' && payment.date.startsWith(currentYear))
+          .reduce((total, payment) => total + payment.amount, 0)
+
+        return <article className="apartment-tile" key={apartment.id}>
+          <div className="apartment-tile-heading"><span className="apartment-tile-floor">קומה {apartment.floor}</span><strong>דירה {apartment.number}</strong></div>
+          <div className="apartment-tile-row"><span>דיירים</span><strong className="apartment-tile-tenants">{tenants.length ? tenants.map((tenant) => tenant.name).join(', ') : 'פנויה'}</strong></div>
+          <div className="apartment-tile-row apartment-tile-total"><span>שולם השנה</span><strong>{formatMoney(annualPaidTotal)}</strong></div>
+          <div className="apartment-tile-actions"><button className="row-view" title="צפייה בפרטי דירה" aria-label={`צפייה בפרטי דירה ${apartment.number}`} onClick={() => onViewApartment(apartment)}><Eye size={15} /></button><button className="row-edit" title="עריכת דירה" aria-label={`עריכת דירה ${apartment.number}`} onClick={() => onEdit(apartment)}><Pencil size={15} /></button><button className="row-delete" title="מחיקת דירה" aria-label={`מחיקת דירה ${apartment.number}`} onClick={() => onDelete(collection, apartment.id)}><Trash2 size={15} /></button></div>
+        </article>
+      })}</div> : <EmptyState icon={emptyIcon} title={query ? 'לא מצאנו תוצאות' : 'אין כאן רשומות עדיין'} text={query ? 'נסו לחפש במילים אחרות.' : `אפשר להתחיל ולהוסיף ${singularLabels[page]} ראשון.`} action={query ? undefined : `הוספת ${singularLabels[page]}`} onClick={query ? undefined : onAdd} />}
+    </section>
+  }
+
   return <section className="panel collection-panel">
     <div className="collection-toolbar"><div className="record-count">{filtered.length} {countLabel[page]}</div><label className="search-box"><Search size={16} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="חיפוש..." aria-label="חיפוש ברשומות" /></label></div>
-    {filtered.length ? <div className="table-wrap"><table className="full-table"><thead><tr>{page === 'tenants' ? <><th>דייר/ת</th><th>דירה</th><th>טלפון</th><th>דוא״ל</th></> : page === 'apartments' ? <><th>דירה</th><th>קומה</th><th>חדרים</th><th>דייר/ת</th></> : page === 'payments' ? <><th>דייר/ת</th><th>עבור חודש</th><th>תאריך</th><th>סטטוס</th><th>סכום</th></> : page === 'expenses' ? <><th>תיאור</th><th>קטגוריה</th><th>תאריך</th><th>ספק / הערה</th><th>סכום</th></> : <><th>תיאור התקלה</th><th>מיקום</th><th>תאריך</th><th>דחיפות</th><th>סטטוס</th></>}</tr></thead>
+    {filtered.length ? <div className="table-wrap"><table className="full-table"><thead><tr>{page === 'tenants' ? <><th>דייר/ת</th><th>דירה</th><th>טלפון</th><th>דוא״ל</th></> : page === 'payments' ? <><th>דייר/ת</th><th>עבור חודש</th><th>תאריך</th><th>סטטוס</th><th>סכום</th></> : page === 'expenses' ? <><th>תיאור</th><th>קטגוריה</th><th>תאריך</th><th>ספק / הערה</th><th>סכום</th></> : <><th>תיאור התקלה</th><th>מיקום</th><th>תאריך</th><th>דחיפות</th><th>סטטוס</th></>}</tr></thead>
       <tbody>{filtered.map((row) => <tr key={row.id}>
         {page === 'tenants' && <><td><span className="table-primary">{(row as Tenant).name}</span></td><td>{getApartmentName((row as Tenant).apartmentId)}</td><td dir="ltr" className="ltr-cell">{(row as Tenant).phone}</td><td dir="ltr" className="ltr-cell">{(row as Tenant).email || '—'}</td></>}
-        {page === 'apartments' && <><td><span className="table-primary">דירה {(row as Apartment).number}</span></td><td>{(row as Apartment).floor}</td><td>{(row as Apartment).rooms}</td><td>{building.tenants.find((tenant) => tenant.apartmentId === row.id)?.name || <span className="muted">פנויה</span>}</td></>}
         {page === 'payments' && <><td>{getTenantName((row as Payment).tenantId)}</td><td>{formatMonth((row as Payment).month)}</td><td>{formatDate((row as Payment).date)}</td><td><StatusBadge value={(row as Payment).status} /></td><td className="money-cell">{formatMoney((row as Payment).amount)}</td></>}
         {page === 'expenses' && <><td><span className="table-primary">{(row as Expense).title}</span></td><td>{(row as Expense).category}</td><td>{formatDate((row as Expense).date)}</td><td>{(row as Expense).vendor || '—'}</td><td className="money-cell">{formatMoney((row as Expense).amount)}</td></>}
         {page === 'issues' && <><td><span className="table-primary">{(row as Issue).title}</span></td><td>{getApartmentName((row as Issue).apartmentId)}</td><td>{formatDate((row as Issue).date)}</td><td><span className={`priority-text ${(row as Issue).priority === 'דחופה' ? 'priority-urgent' : ''}`}>{(row as Issue).priority}</span></td><td><StatusBadge value={(row as Issue).status} /></td></>}
