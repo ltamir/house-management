@@ -2,7 +2,7 @@ import { ArrowDownLeft, ArrowUpLeft, Plus } from 'lucide-react'
 import EmptyState from '../components/EmptyState'
 import StatusBadge from '../components/StatusBadge'
 import type { BuildingData, CollectionPage, Page } from '../types'
-import { formatDate, formatMoney } from '../lib/formatters'
+import { formatDate, formatMoney, formatMonthRange } from '../lib/formatters'
 
 type TransactionsPageProps = {
   building: BuildingData
@@ -28,7 +28,7 @@ export default function TransactionsPage({ building, getTenantName, onAdd }: Tra
       id: `payment-${payment.id}`,
       date: payment.date,
       description: getTenantName(payment.tenantId),
-      detail: 'תשלום ועד הבית',
+      detail: `תשלום ועד הבית · ${formatMonthRange(payment.fromMonth, payment.toMonth)}`,
       kind: 'payment' as const,
       status: payment.status,
       amount: payment.amount,

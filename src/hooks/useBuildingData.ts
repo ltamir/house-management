@@ -8,7 +8,7 @@ export function useBuildingData() {
 
   useEffect(() => saveBuilding(building), [building])
 
-  const currentMonthPayments = building.payments.filter((payment) => payment.month === monthNow())
+  const currentMonthPayments = building.payments.filter((payment) => payment.date.slice(0, 7) === monthNow())
   const openIssues = building.issues.filter((issue) => issue.status !== 'טופלה')
   const monthlyIncome = currentMonthPayments.filter((payment) => payment.status === 'שולם').reduce((total, payment) => total + payment.amount, 0)
   const monthlyExpenses = building.expenses.filter((expense) => expense.date.slice(0, 7) === monthNow()).reduce((total, expense) => total + expense.amount, 0)

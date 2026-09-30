@@ -26,7 +26,14 @@ export function loadBuilding(): BuildingData {
         isOwner: tenant.isOwner === true,
       })) : [],
       apartments: Array.isArray(parsed.apartments) ? parsed.apartments : [],
-      payments: Array.isArray(parsed.payments) ? parsed.payments : [],
+      payments: Array.isArray(parsed.payments) ? parsed.payments.map((payment) => {
+        const migratedPayment = { ...payment } as Payment & { month?: string }
+        const legacyMonth = migratedPayment.month || ''
+        const fromMonth = migratedPayment.fromMonth || legacyMonth
+        const toMonth = migratedPayment.toMonth || legacyMonth || fromMonth
+        delete migratedPayment.month
+        return { ...migratedPayment, fromMonth, toMonth }
+      }) : [],
       expenses: Array.isArray(parsed.expenses) ? parsed.expenses : [],
       issues: Array.isArray(parsed.issues) ? parsed.issues : [],
       utilities: {
@@ -64,7 +71,7 @@ export function createBuildingRecord(page: CollectionPage, values: Record<string
 
   if (collection === 'tenants') record = { id, name: values.name, phone: values.phone, email: values.email, apartmentId: values.apartmentId, isOwner: values.isOwner === 'true' }
   else if (collection === 'apartments') record = { id, number: values.number, floor: values.floor, rooms: values.rooms }
-  else if (collection === 'payments') record = { id, tenantId: values.tenantId, month: values.month, amount: Number(values.amount), date: values.date || today(), status: (values.status || 'ממתין') as Payment['status'] }
+  else if (collection === 'payments') record = { id, tenantId: values.tenantId, fromMonth: values.fromMonth, toMonth: values.toMonth, amount: Number(values.amount), date: values.date || today(), status: (values.status || 'ממתין') as Payment['status'] }
   else if (collection === 'expenses') record = { id, title: values.title, category: values.category || 'אחר', amount: Number(values.amount), date: values.date, vendor: values.vendor }
   else record = { id, title: values.title, apartmentId: values.apartmentId, date: values.date, priority: (values.priority || 'רגילה') as Issue['priority'], status: (values.status || 'פתוחה') as Issue['status'] }
 

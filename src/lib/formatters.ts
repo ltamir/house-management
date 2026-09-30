@@ -16,3 +16,9 @@ export function formatMonth(value: string) {
   const date = new Date(`${value}-15T12:00:00`)
   return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' }).format(date)
 }
+
+export function formatMonthRange(fromMonth: string, toMonth: string) {
+  if (!fromMonth) return '—'
+  if (!toMonth || fromMonth === toMonth) return formatMonth(fromMonth)
+  return `${formatMonth(fromMonth)} – ${formatMonth(toMonth)}`
+}

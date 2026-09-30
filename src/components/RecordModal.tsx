@@ -44,6 +44,10 @@ export default function RecordModal({ page, building, monthlyPaymentAmount, reco
       if (field.required && !values[field.name]) { setError(`צריך למלא: ${field.label}`); return }
       if (field.type === 'number' && values[field.name] && Number(values[field.name]) < 0) { setError(`${field.label} לא יכול להיות שלילי`); return }
     }
+    if (page === 'payments' && values.toMonth < values.fromMonth) {
+      setError('חודש הסיום לא יכול להיות לפני חודש ההתחלה')
+      return
+    }
     setError('')
     onSubmit(values)
   }

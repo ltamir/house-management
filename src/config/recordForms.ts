@@ -57,7 +57,8 @@ export const recordForms: Record<CollectionPage, { collection: CollectionName; f
     { name: 'rooms', label: 'מספר חדרים', type: 'number', required: true },
   ] },
   payments: { collection: 'payments', fields: [
-    { name: 'tenantId', label: 'דייר', options: [], required: true }, { name: 'month', label: 'עבור חודש', type: 'month', required: true },
+    { name: 'tenantId', label: 'דייר', options: [], required: true },
+    { name: 'fromMonth', label: 'מתחילת חודש', type: 'month', required: true }, { name: 'toMonth', label: 'עד סוף חודש', type: 'month', required: true },
     { name: 'amount', label: 'סכום לתשלום (₪)', type: 'number', required: true }, { name: 'date', label: 'תאריך תשלום', type: 'date' },
     { name: 'status', label: 'סטטוס', options: [{ value: 'שולם', label: 'שולם' }, { value: 'ממתין', label: 'ממתין' }] },
   ] },

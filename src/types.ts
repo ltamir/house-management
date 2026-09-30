@@ -17,7 +17,8 @@ export type Apartment = {
 export type Payment = {
   id: string
   tenantId: string
-  month: string
+  fromMonth: string
+  toMonth: string
   amount: number
   date: string
   status: 'שולם' | 'ממתין'
