@@ -5,15 +5,16 @@ import OverviewPage from './pages/OverviewPage'
 import CollectionPageView from './pages/CollectionPage'
 import { useBuildingData } from './hooks/useBuildingData'
 import { useNotice } from './hooks/useNotice'
-import type { CollectionPage, Page } from './types'
+import type { BuildingRecord, CollectionPage, Page } from './types'
 
 export default function App() {
   const [page, setPage] = useState<Page>('overview')
-  const [modal, setModal] = useState<CollectionPage | null>(null)
+  const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord } | null>(null)
   const { notice, showNotice } = useNotice()
   const {
     building,
     addRecord,
+    updateRecord,
     deleteRecord,
     currentMonthPayments,
     openIssues,
@@ -28,14 +29,15 @@ export default function App() {
       showNotice(target === 'payments' ? 'כדאי להוסיף דיירים לפני רישום תשלום' : 'כדאי להוסיף דירות לפני דיווח על תקלה')
       return
     }
-    setModal(target)
+    setModal({ page: target })
   }
 
   function handleSubmit(values: Record<string, string>) {
     if (!modal) return
-    addRecord(modal, values)
+    if (modal.record) updateRecord(modal.page, modal.record.id, values)
+    else addRecord(modal.page, values)
     setModal(null)
-    showNotice('נוסף בהצלחה ונשמר במכשיר')
+    showNotice(modal.record ? 'השינויים נשמרו' : 'נוסף בהצלחה ונשמר במכשיר')
   }
 
   function handleDelete(collection: Parameters<typeof deleteRecord>[0], id: string) {
@@ -62,10 +64,11 @@ export default function App() {
         getApartmentName={getApartmentName}
         getTenantName={getTenantName}
         onDelete={handleDelete}
+        onEdit={(record) => setModal({ page, record })}
         onAdd={() => openForm(page)}
       />}
     </AppLayout>
-    {modal && <RecordModal key={modal} page={modal} building={building} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
+    {modal && <RecordModal key={`${modal.page}-${modal.record?.id || 'new'}`} page={modal.page} building={building} record={modal.record} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
     {notice && <div className="toast" role="status"><span aria-hidden="true">✓</span>{notice}</div>}
   </>
 }

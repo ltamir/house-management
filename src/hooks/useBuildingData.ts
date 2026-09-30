@@ -18,6 +18,14 @@ export function useBuildingData() {
     setBuilding((previous) => ({ ...previous, [collection]: [...previous[collection], record] }))
   }
 
+  function updateRecord(page: CollectionPage, id: string, values: Record<string, string>) {
+    const { collection, record } = createBuildingRecord(page, values, id)
+    setBuilding((previous) => ({
+      ...previous,
+      [collection]: previous[collection].map((item) => item.id === id ? record : item),
+    }))
+  }
+
   function deleteRecord(collection: CollectionName, id: string) {
     setBuilding((previous) => ({ ...previous, [collection]: previous[collection].filter((record) => record.id !== id) }))
   }
@@ -31,5 +39,5 @@ export function useBuildingData() {
     return apartment ? `דירה ${apartment.number}` : 'שטח משותף'
   }
 
-  return { building, addRecord, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getTenantName, getApartmentName }
+  return { building, addRecord, updateRecord, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getTenantName, getApartmentName }
 }

@@ -37,15 +37,15 @@ export function saveBuilding(building: BuildingData) {
   }
 }
 
-export function createBuildingRecord(page: CollectionPage, values: Record<string, string>) {
+export function createBuildingRecord(page: CollectionPage, values: Record<string, string>, id = makeId()) {
   const collection = recordForms[page].collection
   let record: Tenant | Apartment | Payment | Expense | Issue
 
-  if (collection === 'tenants') record = { id: makeId(), name: values.name, phone: values.phone, email: values.email, apartmentId: values.apartmentId }
-  else if (collection === 'apartments') record = { id: makeId(), number: values.number, floor: values.floor, rooms: values.rooms }
-  else if (collection === 'payments') record = { id: makeId(), tenantId: values.tenantId, month: values.month, amount: Number(values.amount), date: values.date || today(), status: (values.status || 'ממתין') as Payment['status'] }
-  else if (collection === 'expenses') record = { id: makeId(), title: values.title, category: values.category || 'אחר', amount: Number(values.amount), date: values.date, vendor: values.vendor }
-  else record = { id: makeId(), title: values.title, apartmentId: values.apartmentId, date: values.date, priority: (values.priority || 'רגילה') as Issue['priority'], status: (values.status || 'פתוחה') as Issue['status'] }
+  if (collection === 'tenants') record = { id, name: values.name, phone: values.phone, email: values.email, apartmentId: values.apartmentId }
+  else if (collection === 'apartments') record = { id, number: values.number, floor: values.floor, rooms: values.rooms }
+  else if (collection === 'payments') record = { id, tenantId: values.tenantId, month: values.month, amount: Number(values.amount), date: values.date || today(), status: (values.status || 'ממתין') as Payment['status'] }
+  else if (collection === 'expenses') record = { id, title: values.title, category: values.category || 'אחר', amount: Number(values.amount), date: values.date, vendor: values.vendor }
+  else record = { id, title: values.title, apartmentId: values.apartmentId, date: values.date, priority: (values.priority || 'רגילה') as Issue['priority'], status: (values.status || 'פתוחה') as Issue['status'] }
 
   return { collection: collection as CollectionName, record }
 }

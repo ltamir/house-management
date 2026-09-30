@@ -140,10 +140,12 @@ td { height: 51px; padding: 7px 14px; border-top: 1px solid #f0f1ed; color: #777
 .full-table { font-size: 11px; }.full-table th { height: 39px; padding: 0 16px; }.full-table td { height: 55px; padding: 8px 16px; }.full-table .table-primary { font-size: 11px; }
 .ltr-cell { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 10px; }
 .muted { color: #a2a7a1; }
-.row-action-cell { width: 37px; padding: 0 8px !important; }
-.row-delete { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 5px; background: transparent; color: #acb0aa; cursor: pointer; opacity: .65; }
+.row-action-cell { width: 74px; padding: 0 8px !important; }
+.row-actions { display: flex; align-items: center; gap: 2px; }
+.row-edit, .row-delete { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 5px; background: transparent; color: #8b958d; cursor: pointer; opacity: .7; }
+.row-edit:hover { color: #47765e; background: #edf3ee; opacity: 1; }
 .row-delete:hover { color: #a65e50; background: #fbf0ec; opacity: 1; }
-.full-table tr:hover .row-delete { opacity: 1; }
+.full-table tr:hover .row-edit, .full-table tr:hover .row-delete { opacity: 1; }
 
 .modal-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(28,37,30,.34); backdrop-filter: blur(3px); animation: fade-in .16s ease both; }
 .form-modal { width: min(440px,100%); max-height: min(690px,calc(100vh - 32px)); overflow: auto; padding: 21px 22px 17px; border: 1px solid #e8eae4; border-radius: 9px; background: #fff; box-shadow: 0 17px 65px rgba(33,45,35,.17); animation: modal-in .2s ease both; }
