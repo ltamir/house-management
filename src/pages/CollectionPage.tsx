@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CircleHelp, ClipboardList, DoorOpen, Pencil, Search, Trash2, Users, Wallet } from 'lucide-react'
+import { CircleHelp, ClipboardList, DoorOpen, Eye, Pencil, Search, Trash2, Users, Wallet } from 'lucide-react'
 import EmptyState from '../components/EmptyState'
 import StatusBadge from '../components/StatusBadge'
 import { collectionNames, singularLabels } from '../config/recordForms'
@@ -13,10 +13,11 @@ type CollectionPageProps = {
   getTenantName: (id: string) => string
   onDelete: (collection: CollectionName, id: string) => void
   onEdit: (record: BuildingRecord) => void
+  onViewApartment: (apartment: Apartment) => void
   onAdd: () => void
 }
 
-export default function CollectionPageView({ page, building, getApartmentName, getTenantName, onDelete, onEdit, onAdd }: CollectionPageProps) {
+export default function CollectionPageView({ page, building, getApartmentName, getTenantName, onDelete, onEdit, onViewApartment, onAdd }: CollectionPageProps) {
   const [search, setSearch] = useState('')
   const collection = collectionNames[page]
   const rows = building[collection] as (Tenant | Apartment | Payment | Expense | Issue)[]
@@ -45,7 +46,7 @@ export default function CollectionPageView({ page, building, getApartmentName, g
         {page === 'payments' && <><td>{getTenantName((row as Payment).tenantId)}</td><td>{formatMonth((row as Payment).month)}</td><td>{formatDate((row as Payment).date)}</td><td><StatusBadge value={(row as Payment).status} /></td><td className="money-cell">{formatMoney((row as Payment).amount)}</td></>}
         {page === 'expenses' && <><td><span className="table-primary">{(row as Expense).title}</span></td><td>{(row as Expense).category}</td><td>{formatDate((row as Expense).date)}</td><td>{(row as Expense).vendor || '—'}</td><td className="money-cell">{formatMoney((row as Expense).amount)}</td></>}
         {page === 'issues' && <><td><span className="table-primary">{(row as Issue).title}</span></td><td>{getApartmentName((row as Issue).apartmentId)}</td><td>{formatDate((row as Issue).date)}</td><td><span className={`priority-text ${(row as Issue).priority === 'דחופה' ? 'priority-urgent' : ''}`}>{(row as Issue).priority}</span></td><td><StatusBadge value={(row as Issue).status} /></td></>}
-        <td className="row-action-cell"><span className="row-actions"><button className="row-edit" title="עריכת רשומה" aria-label="עריכת רשומה" onClick={() => onEdit(row)}><Pencil size={15} /></button><button className="row-delete" title="מחיקת רשומה" aria-label="מחיקת רשומה" onClick={() => onDelete(collection, row.id)}><Trash2 size={15} /></button></span></td>
+        <td className={`row-action-cell ${page === 'apartments' ? 'row-action-cell-apartment' : ''}`}><span className="row-actions">{page === 'apartments' && <button className="row-view" title="צפייה בפרטי דירה" aria-label="צפייה בפרטי דירה" onClick={() => onViewApartment(row as Apartment)}><Eye size={15} /></button>}<button className="row-edit" title="עריכת רשומה" aria-label="עריכת רשומה" onClick={() => onEdit(row)}><Pencil size={15} /></button><button className="row-delete" title="מחיקת רשומה" aria-label="מחיקת רשומה" onClick={() => onDelete(collection, row.id)}><Trash2 size={15} /></button></span></td>
       </tr>)}</tbody></table></div> : <EmptyState icon={emptyIcon} title={query ? 'לא מצאנו תוצאות' : 'אין כאן רשומות עדיין'} text={query ? 'נסו לחפש במילים אחרות.' : `אפשר להתחיל ולהוסיף ${singularLabels[page]} ראשון.`} action={query ? undefined : `הוספת ${singularLabels[page]}`} onClick={query ? undefined : onAdd} />}
   </section>
 }

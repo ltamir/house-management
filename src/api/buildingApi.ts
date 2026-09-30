@@ -1,4 +1,4 @@
-import type { Apartment, BuildingData, CollectionName, CollectionPage, Expense, Issue, Payment, Tenant } from '../types'
+import type { Apartment, BuildingData, CollectionName, CollectionPage, Expense, Issue, Payment, Tenant, UtilityKind } from '../types'
 import { recordForms } from '../config/recordForms'
 import { makeId, today } from '../lib/formatters'
 
@@ -10,6 +10,7 @@ const emptyBuilding: BuildingData = {
   payments: [],
   expenses: [],
   issues: [],
+  utilities: { water: [], electricity: [] },
 }
 
 export function loadBuilding(): BuildingData {
@@ -23,6 +24,10 @@ export function loadBuilding(): BuildingData {
       payments: Array.isArray(parsed.payments) ? parsed.payments : [],
       expenses: Array.isArray(parsed.expenses) ? parsed.expenses : [],
       issues: Array.isArray(parsed.issues) ? parsed.issues : [],
+      utilities: {
+        water: Array.isArray(parsed.utilities?.water) ? parsed.utilities.water : [],
+        electricity: Array.isArray(parsed.utilities?.electricity) ? parsed.utilities.electricity : [],
+      },
     }
   } catch {
     return emptyBuilding
@@ -34,6 +39,17 @@ export function saveBuilding(building: BuildingData) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(building))
   } catch {
     // Storage may be unavailable in private or restricted browsing contexts.
+  }
+}
+
+export function createUtilityPayment(
+  type: UtilityKind,
+  apartmentId: string,
+  values: Omit<BuildingData['utilities']['water'][number], 'id' | 'apartmentId' | 'createdAt'>,
+) {
+  return {
+    type,
+    payment: { ...values, id: makeId(), apartmentId, createdAt: new Date().toISOString() },
   }
 }
 

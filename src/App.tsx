@@ -1,20 +1,23 @@
 import { useState } from 'react'
 import AppLayout from './components/AppLayout'
+import ApartmentDetailsModal from './components/ApartmentDetailsModal'
 import RecordModal from './components/RecordModal'
 import OverviewPage from './pages/OverviewPage'
 import CollectionPageView from './pages/CollectionPage'
 import { useBuildingData } from './hooks/useBuildingData'
 import { useNotice } from './hooks/useNotice'
-import type { BuildingRecord, CollectionPage, Page } from './types'
+import type { Apartment, BuildingRecord, CollectionPage, Page } from './types'
 
 export default function App() {
   const [page, setPage] = useState<Page>('overview')
   const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord } | null>(null)
+  const [viewedApartment, setViewedApartment] = useState<Apartment | null>(null)
   const { notice, showNotice } = useNotice()
   const {
     building,
     addRecord,
     updateRecord,
+    addUtilityPayment,
     deleteRecord,
     currentMonthPayments,
     openIssues,
@@ -65,10 +68,20 @@ export default function App() {
         getTenantName={getTenantName}
         onDelete={handleDelete}
         onEdit={(record) => setModal({ page, record })}
+        onViewApartment={setViewedApartment}
         onAdd={() => openForm(page)}
       />}
     </AppLayout>
     {modal && <RecordModal key={`${modal.page}-${modal.record?.id || 'new'}`} page={modal.page} building={building} record={modal.record} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
+    {viewedApartment && <ApartmentDetailsModal
+      key={viewedApartment.id}
+      apartment={viewedApartment}
+      tenants={building.tenants.filter((tenant) => tenant.apartmentId === viewedApartment.id)}
+      committeePayments={building.payments.filter((payment) => building.tenants.some((tenant) => tenant.id === payment.tenantId && tenant.apartmentId === viewedApartment.id))}
+      utilities={building.utilities}
+      onClose={() => setViewedApartment(null)}
+      onAddUtilityPayment={(type, values) => addUtilityPayment(type, viewedApartment.id, values)}
+    />}
     {notice && <div className="toast" role="status"><span aria-hidden="true">✓</span>{notice}</div>}
   </>
 }

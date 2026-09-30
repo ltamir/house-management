@@ -40,15 +40,30 @@ export type Issue = {
   status: 'פתוחה' | 'בטיפול' | 'טופלה'
 }
 
+export type UtilityKind = 'water' | 'electricity'
+
+export type UtilityPayment = {
+  id: string
+  apartmentId: string
+  amount: number
+  meterReading: number
+  fromDate: string
+  toDate: string
+  createdAt: string
+}
+
+export type ApartmentUtilities = Record<UtilityKind, UtilityPayment[]>
+
 export type BuildingData = {
   tenants: Tenant[]
   apartments: Apartment[]
   payments: Payment[]
   expenses: Expense[]
   issues: Issue[]
+  utilities: ApartmentUtilities
 }
 
-export type CollectionName = keyof BuildingData
+export type CollectionName = Exclude<keyof BuildingData, 'utilities'>
 
 export type BuildingRecord = Tenant | Apartment | Payment | Expense | Issue
 

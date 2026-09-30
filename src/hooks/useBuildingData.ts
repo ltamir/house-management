@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { createBuildingRecord, loadBuilding, saveBuilding } from '../api/buildingApi'
-import type { BuildingData, CollectionName, CollectionPage } from '../types'
+import { createBuildingRecord, createUtilityPayment, loadBuilding, saveBuilding } from '../api/buildingApi'
+import type { BuildingData, CollectionName, CollectionPage, UtilityKind } from '../types'
 import { monthNow } from '../lib/formatters'
 
 export function useBuildingData() {
@@ -26,6 +26,14 @@ export function useBuildingData() {
     }))
   }
 
+  function addUtilityPayment(type: UtilityKind, apartmentId: string, values: Omit<BuildingData['utilities']['water'][number], 'id' | 'apartmentId' | 'createdAt'>) {
+    const { payment } = createUtilityPayment(type, apartmentId, values)
+    setBuilding((previous) => ({
+      ...previous,
+      utilities: { ...previous.utilities, [type]: [...previous.utilities[type], payment] },
+    }))
+  }
+
   function deleteRecord(collection: CollectionName, id: string) {
     setBuilding((previous) => ({ ...previous, [collection]: previous[collection].filter((record) => record.id !== id) }))
   }
@@ -39,5 +47,5 @@ export function useBuildingData() {
     return apartment ? `דירה ${apartment.number}` : 'שטח משותף'
   }
 
-  return { building, addRecord, updateRecord, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getTenantName, getApartmentName }
+  return { building, addRecord, updateRecord, addUtilityPayment, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getTenantName, getApartmentName }
 }
