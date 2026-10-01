@@ -65,12 +65,12 @@ export function createUtilityPayment(
   }
 }
 
-export function createBuildingRecord(page: CollectionPage, values: Record<string, string>, id = makeId()) {
+export function createBuildingRecord(page: CollectionPage, values: Record<string, string>, id: string = makeId()) {
   const collection = recordForms[page].collection
   let record: Tenant | Apartment | Payment | Expense | Issue
 
   if (collection === 'tenants') record = { id, name: values.name, phone: values.phone, email: values.email, apartmentId: values.apartmentId, isOwner: values.isOwner === 'true' }
-  else if (collection === 'apartments') record = { id, number: values.number, floor: values.floor, rooms: values.rooms }
+  else if (collection === 'apartments') record = { id, number: values.number, floor: values.floor, rooms: values.rooms || '', size: values.size || '' }
   else if (collection === 'payments') record = { id, tenantId: values.tenantId, fromMonth: values.fromMonth, toMonth: values.toMonth, amount: Number(values.amount), date: values.date || today(), status: (values.status || 'ממתין') as Payment['status'] }
   else if (collection === 'expenses') record = { id, title: values.title, category: values.category || 'אחר', amount: Number(values.amount), date: values.date, vendor: values.vendor }
   else record = { id, title: values.title, apartmentId: values.apartmentId, date: values.date, priority: (values.priority || 'רגילה') as Issue['priority'], status: (values.status || 'פתוחה') as Issue['status'] }

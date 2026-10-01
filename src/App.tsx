@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import AppLayout from './components/AppLayout'
 import ApartmentDetailsModal from './components/ApartmentDetailsModal'
+import ApartmentSetupModal from './components/ApartmentSetupModal'
 import BuildingSettingsModal from './components/BuildingSettingsModal'
 import RecordModal from './components/RecordModal'
 import OverviewPage from './pages/OverviewPage'
@@ -14,11 +15,13 @@ export default function App() {
   const [page, setPage] = useState<Page>('overview')
   const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord } | null>(null)
   const [viewedApartment, setViewedApartment] = useState<Apartment | null>(null)
+  const [apartmentSetupOpen, setApartmentSetupOpen] = useState(false)
   const [buildingSettingsOpen, setBuildingSettingsOpen] = useState(false)
   const { notice, showNotice } = useNotice()
   const {
     building,
     addRecord,
+    createApartmentsWithTenants,
     updateRecord,
     addUtilityPayment,
     updateUtilityPayment,
@@ -79,9 +82,18 @@ export default function App() {
         onEdit={(record) => setModal({ page, record })}
         onViewApartment={setViewedApartment}
         onAdd={() => openForm(page)}
+        onCreateBuilding={() => setApartmentSetupOpen(true)}
       />}
     </AppLayout>
     {modal && <RecordModal key={`${modal.page}-${modal.record?.id || 'new'}`} page={modal.page} building={building} monthlyPaymentAmount={building.monthlyPaymentAmount} record={modal.record} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
+    {apartmentSetupOpen && <ApartmentSetupModal
+      onClose={() => setApartmentSetupOpen(false)}
+      onSubmit={(floors, apartmentsPerFloor) => {
+        createApartmentsWithTenants(floors, apartmentsPerFloor)
+        setApartmentSetupOpen(false)
+        showNotice(`נוצרו ${floors * apartmentsPerFloor} דירות ודיירים לדוגמה`)
+      }}
+    />}
     {buildingSettingsOpen && <BuildingSettingsModal
       monthlyPaymentAmount={building.monthlyPaymentAmount}
       onClose={() => setBuildingSettingsOpen(false)}
