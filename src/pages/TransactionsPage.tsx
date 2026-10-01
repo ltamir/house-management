@@ -1,7 +1,7 @@
 import { ArrowDownLeft, ArrowUpLeft, Plus } from 'lucide-react'
 import EmptyState from '../components/EmptyState'
 import StatusBadge from '../components/StatusBadge'
-import type { BuildingData, CollectionPage, Page } from '../types'
+import type { BuildingData, CollectionPage } from '../types'
 import { formatDate, formatMoney, formatMonthRange } from '../lib/formatters'
 
 type TransactionsPageProps = {

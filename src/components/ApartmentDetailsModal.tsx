@@ -71,7 +71,8 @@ export default function ApartmentDetailsModal({ apartment, tenants, committeePay
 
       <div className="apartment-summary">
         <div><span>קומה</span><strong>{apartment.floor}</strong></div>
-        <div><span>חדרים</span><strong>{apartment.rooms}</strong></div>
+        <div><span>חדרים</span><strong>{apartment.rooms || '—'}</strong></div>
+        <div><span>גודל</span><strong>{apartment.size ? `${apartment.size} מ״ר` : '—'}</strong></div>
         <div><span>דיירים</span><strong>{tenants.length ? tenants.map((tenant) => tenant.name).join(', ') : 'פנויה'}</strong></div>
       </div>
 

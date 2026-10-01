@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CircleHelp, ClipboardList, DoorOpen, Eye, Pencil, Search, Trash2, Users, Wallet } from 'lucide-react'
+import { Building2, CircleHelp, ClipboardList, DoorOpen, Eye, Pencil, Search, Trash2, Users, Wallet } from 'lucide-react'
 import EmptyState from '../components/EmptyState'
 import StatusBadge from '../components/StatusBadge'
 import { collectionNames, singularLabels } from '../config/recordForms'
@@ -17,9 +17,10 @@ type CollectionPageProps = {
   onEdit: (record: BuildingRecord) => void
   onViewApartment: (apartment: Apartment) => void
   onAdd: () => void
+  onCreateBuilding: () => void
 }
 
-export default function CollectionPageView({ page, building, getApartmentName, getTenantName, onDelete, onEdit, onViewApartment, onAdd }: CollectionPageProps) {
+export default function CollectionPageView({ page, building, getApartmentName, getTenantName, onDelete, onEdit, onViewApartment, onAdd, onCreateBuilding }: CollectionPageProps) {
   const [search, setSearch] = useState('')
   const collection = collectionNames[page]
   const rows = building[collection] as (Tenant | Apartment | Payment | Expense | Issue)[]
@@ -54,11 +55,17 @@ export default function CollectionPageView({ page, building, getApartmentName, g
 
         return <article className="apartment-tile" key={apartment.id}>
           <div className="apartment-tile-heading"><span className="apartment-tile-floor">קומה {apartment.floor}</span><strong>דירה {apartment.number}</strong></div>
+          {(apartment.rooms || apartment.size) && <div className="apartment-tile-row"><span>פרטים</span><strong>{[apartment.rooms && `${apartment.rooms} חדרים`, apartment.size && `${apartment.size} מ״ר`].filter(Boolean).join(' · ')}</strong></div>}
           <div className="apartment-tile-row"><span>דיירים</span><strong className="apartment-tile-tenants">{tenants.length ? tenants.map((tenant) => tenant.name).join(', ') : 'פנויה'}</strong></div>
           <div className="apartment-tile-row apartment-tile-total"><span>שולם השנה</span><strong>{formatMoney(annualPaidTotal)}</strong></div>
           <div className="apartment-tile-actions"><button className="row-view" title="צפייה בפרטי דירה" aria-label={`צפייה בפרטי דירה ${apartment.number}`} onClick={() => onViewApartment(apartment)}><Eye size={15} /></button><button className="row-edit" title="עריכת דירה" aria-label={`עריכת דירה ${apartment.number}`} onClick={() => onEdit(apartment)}><Pencil size={15} /></button><button className="row-delete" title="מחיקת דירה" aria-label={`מחיקת דירה ${apartment.number}`} onClick={() => onDelete(collection, apartment.id)}><Trash2 size={15} /></button></div>
         </article>
-      })}</div> : <EmptyState icon={emptyIcon} title={query ? 'לא מצאנו תוצאות' : 'אין כאן רשומות עדיין'} text={query ? 'נסו לחפש במילים אחרות.' : `אפשר להתחיל ולהוסיף ${singularLabels[page]} ראשון.`} action={query ? undefined : `הוספת ${singularLabels[page]}`} onClick={query ? undefined : onAdd} />}
+      })}</div> : query ? <EmptyState icon={emptyIcon} title="לא מצאנו תוצאות" text="נסו לחפש במילים אחרות." /> : building.apartments.length === 0 ? <div className="empty-state building-empty-state">
+        <button type="button" className="building-empty-icon" onClick={onCreateBuilding} aria-label="הקמת הבניין ויצירת דירות"><Building2 size={25} /></button>
+        <strong>הבניין עדיין ריק</strong>
+        <p>לחצו על הבניין כדי להגדיר קומות ודירות וליצור דייר/ת לכל דירה.</p>
+        <button type="button" className="empty-action" onClick={onCreateBuilding}>הקמת הבניין</button>
+      </div> : <EmptyState icon={emptyIcon} title="אין כאן רשומות עדיין" text={`אפשר להוסיף ${singularLabels[page]} ראשון.`} action={`הוספת ${singularLabels[page]}`} onClick={onAdd} />}
     </section>
   }
 
@@ -70,7 +77,7 @@ export default function CollectionPageView({ page, building, getApartmentName, g
         {page === 'payments' && <><td>{getTenantName((row as Payment).tenantId)}</td><td>{formatMonthRange((row as Payment).fromMonth, (row as Payment).toMonth)}</td><td>{formatDate((row as Payment).date)}</td><td><StatusBadge value={(row as Payment).status} /></td><td className="money-cell">{formatMoney((row as Payment).amount)}</td></>}
         {page === 'expenses' && <><td><span className="table-primary">{(row as Expense).title}</span></td><td>{(row as Expense).category}</td><td>{formatDate((row as Expense).date)}</td><td>{(row as Expense).vendor || '—'}</td><td className="money-cell">{formatMoney((row as Expense).amount)}</td></>}
         {page === 'issues' && <><td><span className="table-primary">{(row as Issue).title}</span></td><td>{getApartmentName((row as Issue).apartmentId)}</td><td>{formatDate((row as Issue).date)}</td><td><span className={`priority-text ${(row as Issue).priority === 'דחופה' ? 'priority-urgent' : ''}`}>{(row as Issue).priority}</span></td><td><StatusBadge value={(row as Issue).status} /></td></>}
-        <td className={`row-action-cell ${page === 'apartments' ? 'row-action-cell-apartment' : ''}`}><span className="row-actions">{page === 'apartments' && <button className="row-view" title="צפייה בפרטי דירה" aria-label="צפייה בפרטי דירה" onClick={() => onViewApartment(row as Apartment)}><Eye size={15} /></button>}<button className="row-edit" title="עריכת רשומה" aria-label="עריכת רשומה" onClick={() => onEdit(row)}><Pencil size={15} /></button><button className="row-delete" title="מחיקת רשומה" aria-label="מחיקת רשומה" onClick={() => onDelete(collection, row.id)}><Trash2 size={15} /></button></span></td>
+        <td className="row-action-cell"><span className="row-actions"><button className="row-edit" title="עריכת רשומה" aria-label="עריכת רשומה" onClick={() => onEdit(row)}><Pencil size={15} /></button><button className="row-delete" title="מחיקת רשומה" aria-label="מחיקת רשומה" onClick={() => onDelete(collection, row.id)}><Trash2 size={15} /></button></span></td>
       </tr>)}</tbody></table></div> : <EmptyState icon={emptyIcon} title={query ? 'לא מצאנו תוצאות' : 'אין כאן רשומות עדיין'} text={query ? 'נסו לחפש במילים אחרות.' : `אפשר להתחיל ולהוסיף ${singularLabels[page]} ראשון.`} action={query ? undefined : `הוספת ${singularLabels[page]}`} onClick={query ? undefined : onAdd} />}
   </section>
 }

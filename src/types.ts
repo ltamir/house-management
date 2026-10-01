@@ -11,7 +11,8 @@ export type Apartment = {
   id: string
   number: string
   floor: string
-  rooms: string
+  rooms?: string
+  size?: string
 }
 
 export type Payment = {
@@ -66,7 +67,7 @@ export type BuildingData = {
   utilities: ApartmentUtilities
 }
 
-export type CollectionName = Exclude<keyof BuildingData, 'utilities'>
+export type CollectionName = Exclude<keyof BuildingData, 'utilities' | 'monthlyPaymentAmount'>
 
 export type BuildingRecord = Tenant | Apartment | Payment | Expense | Issue
 

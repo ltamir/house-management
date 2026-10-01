@@ -54,7 +54,7 @@ export const recordForms: Record<CollectionPage, { collection: CollectionName; f
   ] },
   apartments: { collection: 'apartments', fields: [
     { name: 'number', label: 'מספר דירה', required: true }, { name: 'floor', label: 'קומה', type: 'number', required: true },
-    { name: 'rooms', label: 'מספר חדרים', type: 'number', required: true },
+    { name: 'rooms', label: 'מספר חדרים', type: 'number' }, { name: 'size', label: 'גודל (מ״ר)', type: 'number' },
   ] },
   payments: { collection: 'payments', fields: [
     { name: 'tenantId', label: 'דייר', options: [], required: true },
