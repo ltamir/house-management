@@ -60,7 +60,7 @@ export default function AppLayout({ page, theme, onToggleTheme, openIssuesCount,
           <div className="topbar-meta"><button type="button" className="theme-toggle" onClick={onToggleTheme} aria-label={theme === 'dark' ? 'מעבר למצב בהיר' : 'מעבר למצב כהה'} title={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'} aria-pressed={theme === 'dark'}>{theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}</button><span className="today-label"><CalendarDays size={15} />{new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}</span><span className="user-avatar">ו</span></div>
         </header>
 
-        <div className="content-area">
+        <div className={`content-area content-area-${page}`}>
           <div className="page-heading">
             <div><div className="eyebrow">ניהול בניין <span /> לוח בקרה</div><h1>{pageInfo.title}</h1><p>{pageInfo.subtitle}</p></div>
             {isCollectionPage(page) && <button className="primary-button" onClick={() => onAdd(page)}><Plus size={17} />{`הוספת ${singularLabels[page]}`}</button>}
