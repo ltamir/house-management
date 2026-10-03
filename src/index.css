@@ -492,6 +492,23 @@ td { height: 51px; padding: 7px 14px; border-top: 1px solid #f0f1ed; color: #777
 .app-root[data-color-scheme='blue'] .form-field select:focus { border-color: #82abc1; }
 .app-root[data-color-scheme='blue'] .checkbox-group-options input { accent-color: #39779c; }
 .app-root[data-color-scheme='blue'] .form-field-toggle input[type='checkbox']:checked { background: #39779c; }
+.app-root[data-color-scheme='blue'] .user-avatar { color: #326b8e; border-color: #cfe1ec; background: #e8f1f7; }
+.app-root[data-color-scheme='blue'] .privacy-dot,
+.app-root[data-color-scheme='blue'] .live-dot,
+.app-root[data-color-scheme='blue'] .eyebrow span { background: #4d8cad; }
+.app-root[data-color-scheme='blue'] .theme-toggle { color: #607783; border-color: #d9e5ec; }
+.app-root[data-color-scheme='blue'] .user-avatar { color: #326b8e; border-color: #cfe1ec; background: #e8f1f7; }
+.app-root[data-color-scheme='blue'] .eyebrow span { background: #4d8cad; }
+.app-root[data-color-scheme='blue'] button:focus-visible,
+.app-root[data-color-scheme='blue'] input:focus-visible,
+.app-root[data-color-scheme='blue'] select:focus-visible { outline-color: #77a9c3; }
+.app-root[data-color-scheme='blue'] .toast svg { color: #39779c; }
+.app-root[data-color-scheme='blue'] .status-good { color: #35799d; background: #e8f2f7; }
+.app-root[data-color-scheme='blue'] .owner-badge { color: #39779c; background: #e8f1f6; }
+.app-root[data-color-scheme='blue'] .apartment-total strong { color: #39779c; }
+.app-root[data-color-scheme='blue'] .utility-tab-active { color: #326b8e; }
+.app-root[data-color-scheme='blue'] .building-setup-hint svg { color: #39779c; }
+.app-root[data-color-scheme='blue'] .toast { color: #326b8e; border-color: #d5e4ec; background: #f8fbfd; }
 
 .app-root[data-theme='dark'][data-color-scheme='blue'] { color: #e0e9ef; background: #172129; }
 .app-root[data-theme='dark'][data-color-scheme='blue'] .sidebar { background: #1e2b34; border-color: #344650; }
@@ -536,6 +553,23 @@ td { height: 51px; padding: 7px 14px; border-top: 1px solid #f0f1ed; color: #777
 .app-root[data-theme='dark'][data-color-scheme='blue'] .form-field select:focus { border-color: #6b9ab2; }
 .app-root[data-theme='dark'][data-color-scheme='blue'] .checkbox-group-options input { accent-color: #69a9c9; }
 .app-root[data-theme='dark'][data-color-scheme='blue'] .form-field-toggle input[type='checkbox']:checked { background: #397da2; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .user-avatar { color: #c2e0ef; border-color: #3c5663; background: #2b4350; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .privacy-dot,
+.app-root[data-theme='dark'][data-color-scheme='blue'] .live-dot,
+.app-root[data-theme='dark'][data-color-scheme='blue'] .eyebrow span { background: #74abc7; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .theme-toggle { border-color: #3b505d; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .user-avatar { color: #c2e0ef; border-color: #3c5663; background: #2b4350; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .eyebrow span { background: #74abc7; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] button:focus-visible,
+.app-root[data-theme='dark'][data-color-scheme='blue'] input:focus-visible,
+.app-root[data-theme='dark'][data-color-scheme='blue'] select:focus-visible { outline-color: #69a9c9; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .toast svg { color: #9dc7dc; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .status-good { color: #b4d9eb; background: #2b4350; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .owner-badge { color: #c0e0f0; background: #2b4350; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .apartment-total strong { color: #b8dded; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .utility-tab-active { color: #c3e1ef; background: #2b4350; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .building-setup-hint svg { color: #9dc7dc; }
+.app-root[data-theme='dark'][data-color-scheme='blue'] .toast { color: #c2e0ef; border-color: #3c5663; background: #223743; }
 
 @media (max-width: 640px) {
   .app-root .breadcrumb { font-size: 12px; }
