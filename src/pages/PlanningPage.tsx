@@ -11,6 +11,7 @@ type PlanningPageProps = {
 }
 
 function cadence(intervalMonths: number) {
+  if (intervalMonths === 12) return 'פעם בשנה · 1 בשנה'
   return `${intervalMonths === 1 ? 'כל חודש' : `כל ${intervalMonths} חודשים`} · ${12 / intervalMonths} בשנה`
 }
 

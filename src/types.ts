@@ -61,7 +61,7 @@ export type Expense = {
 export type PlannedExpense = {
   id: string
   title: string
-  intervalMonths: 1 | 2 | 3 | 4
+  intervalMonths: 1 | 2 | 3 | 4 | 12
   amount: number
 }
 

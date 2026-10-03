@@ -57,7 +57,7 @@ export function loadBuilding(): BuildingData {
       expenses: Array.isArray(parsed.expenses) ? parsed.expenses : [],
       plannedExpenses: Array.isArray(parsed.plannedExpenses) ? parsed.plannedExpenses.filter((expense): expense is PlannedExpense => Boolean(
         expense && typeof expense.id === 'string' && typeof expense.title === 'string'
-        && [1, 2, 3, 4].includes(expense.intervalMonths) && Number.isFinite(expense.amount)
+        && [1, 2, 3, 4, 12].includes(expense.intervalMonths) && Number.isFinite(expense.amount)
       )) : [],
       issues: Array.isArray(parsed.issues) ? parsed.issues : [],
       utilities: {
