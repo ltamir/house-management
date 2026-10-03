@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AppLayout from './components/AppLayout'
 import DialogModal from './components/DialogModal'
 import ApartmentDetailsModal from './components/ApartmentDetailsModal'
@@ -19,8 +19,23 @@ type AppDialogState =
   | { type: 'alert'; title: string; message: string }
   | { type: 'confirm'; title: string; message: string; onConfirm: () => void }
 
+type Theme = 'light' | 'dark'
+
+const THEME_STORAGE_KEY = 'beitenu-theme'
+
+function getInitialTheme(): Theme {
+  try {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
+    if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme
+  } catch {
+    return 'light'
+  }
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 export default function App() {
   const [page, setPage] = useState<Page>('overview')
+  const [theme, setTheme] = useState<Theme>(getInitialTheme)
   const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord; initialValues?: Record<string, string> } | null>(null)
   const [plannedExpenseModal, setPlannedExpenseModal] = useState<{ record?: PlannedExpense } | null>(null)
   const [viewedApartment, setViewedApartment] = useState<Apartment | null>(null)
@@ -29,6 +44,14 @@ export default function App() {
   const [quickPersonOpen, setQuickPersonOpen] = useState(false)
   const [dialog, setDialog] = useState<AppDialogState | null>(null)
   const { notice, showNotice } = useNotice()
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme)
+    } catch {
+      return
+    }
+  }, [theme])
   const {
     building,
     addRecord,
@@ -112,8 +135,8 @@ export default function App() {
     })
   }
 
-  return <>
-    <AppLayout page={page} openIssuesCount={openIssues.length} apartmentCount={building.apartments.length} monthlyPaymentAmount={building.monthlyPaymentAmount} onNavigate={setPage} onAdd={openForm} onEditBuilding={() => setBuildingSettingsOpen(true)}>
+  return <div className="app-root" data-theme={theme}>
+    <AppLayout page={page} theme={theme} onToggleTheme={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} openIssuesCount={openIssues.length} apartmentCount={building.apartments.length} monthlyPaymentAmount={building.monthlyPaymentAmount} onNavigate={setPage} onAdd={openForm} onEditBuilding={() => setBuildingSettingsOpen(true)}>
       {page === 'planning' ? <PlanningPage
         monthlyPaymentAmount={building.monthlyPaymentAmount}
         plannedExpenses={building.plannedExpenses}
@@ -176,5 +199,5 @@ export default function App() {
     />}
     {dialog && <DialogModal type={dialog.type} title={dialog.title} message={dialog.message} onClose={() => setDialog(null)} onConfirm={dialog.type === 'confirm' ? confirmDialog : undefined} />}
     {notice && <div className="toast" role="status"><span aria-hidden="true">✓</span>{notice}</div>}
-  </>
+  </div>
 }

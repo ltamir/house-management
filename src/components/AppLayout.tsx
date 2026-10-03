@@ -1,11 +1,13 @@
 import { useState, type ReactNode } from 'react'
-import { Building2, CalendarDays, ChevronLeft, House, Menu, Pencil, Plus } from 'lucide-react'
+import { Building2, CalendarDays, ChevronLeft, House, Menu, Moon, Pencil, Plus, Sun } from 'lucide-react'
 import { isCollectionPage, navigationItems, pageTitles, singularLabels } from '../config/recordForms'
 import { formatMoney } from '../lib/formatters'
 import type { CollectionPage, Page } from '../types'
 
 type AppLayoutProps = {
   page: Page
+  theme: 'light' | 'dark'
+  onToggleTheme: () => void
   openIssuesCount: number
   apartmentCount: number
   monthlyPaymentAmount: number
@@ -15,7 +17,7 @@ type AppLayoutProps = {
   onEditBuilding: () => void
 }
 
-export default function AppLayout({ page, openIssuesCount, apartmentCount, monthlyPaymentAmount, children, onNavigate, onAdd, onEditBuilding }: AppLayoutProps) {
+export default function AppLayout({ page, theme, onToggleTheme, openIssuesCount, apartmentCount, monthlyPaymentAmount, children, onNavigate, onAdd, onEditBuilding }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pageInfo = pageTitles[page]
 
@@ -55,7 +57,7 @@ export default function AppLayout({ page, openIssuesCount, apartmentCount, month
         <header className="topbar">
           <button className="icon-button mobile-menu-button" aria-label="פתיחת תפריט" onClick={() => setMobileMenuOpen(true)}><Menu size={20} /></button>
           <div className="breadcrumb"><span>הבית שלנו</span><ChevronLeft size={14} /><strong>{pageInfo.title}</strong></div>
-          <div className="topbar-meta"><span className="today-label"><CalendarDays size={15} />{new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}</span><span className="user-avatar">ו</span></div>
+          <div className="topbar-meta"><button type="button" className="theme-toggle" onClick={onToggleTheme} aria-label={theme === 'dark' ? 'מעבר למצב בהיר' : 'מעבר למצב כהה'} title={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'} aria-pressed={theme === 'dark'}>{theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}</button><span className="today-label"><CalendarDays size={15} />{new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}</span><span className="user-avatar">ו</span></div>
         </header>
 
         <div className="content-area">
