@@ -1,3 +1,4 @@
+import { isActiveTenancy } from '../lib/tenantViews'
 import {
   ArrowDownLeft,
   ArrowUpLeft,
@@ -16,7 +17,7 @@ import {
 } from 'lucide-react'
 import EmptyState from '../components/EmptyState'
 import StatusBadge from '../components/StatusBadge'
-import type { BuildingData, CollectionPage, Page, Payment } from '../types'
+import { BUILDING_PAYMENT_LOCATION, type BuildingData, type CollectionPage, type Page, type Payment } from '../types'
 import { formatDate, formatMoney, monthNow } from '../lib/formatters'
 
 type OverviewPageProps = {
@@ -26,14 +27,14 @@ type OverviewPageProps = {
   monthlyExpenses: number
   openIssues: BuildingData['issues']
   getApartmentName: (id: string) => string
-  getTenantName: (id: string) => string
+  getPersonName: (id: string) => string
   onNavigate: (page: Page) => void
   onAdd: (page: CollectionPage) => void
 }
 
-export default function OverviewPage({ building, currentMonthPayments, monthlyIncome, monthlyExpenses, openIssues, getApartmentName, getTenantName, onNavigate, onAdd }: OverviewPageProps) {
+export default function OverviewPage({ building, currentMonthPayments, monthlyIncome, monthlyExpenses, openIssues, getApartmentName, getPersonName, onNavigate, onAdd }: OverviewPageProps) {
   const stats: { label: string; value: string; caption: string; icon: LucideIcon; color: string }[] = [
-    { label: 'דירות בבניין', value: String(building.apartments.length), caption: `${building.tenants.length} דיירים רשומים`, icon: DoorOpen, color: 'mint' },
+    { label: 'דירות בבניין', value: String(building.apartments.length), caption: `${building.tenancies.filter((tenancy) => isActiveTenancy(tenancy)).length} דיירים רשומים`, icon: DoorOpen, color: 'mint' },
     { label: 'גבייה החודש', value: formatMoney(monthlyIncome), caption: `${currentMonthPayments.filter((item) => item.status === 'שולם').length} תשלומים התקבלו`, icon: ArrowDownLeft, color: 'blue' },
     { label: 'הוצאות החודש', value: formatMoney(monthlyExpenses), caption: `${building.expenses.filter((item) => item.date.slice(0, 7) === monthNow()).length} הוצאות נרשמו`, icon: ArrowUpLeft, color: 'peach' },
     { label: 'ממתינות לטיפול', value: String(openIssues.length), caption: openIssues.some((issue) => issue.priority === 'דחופה') ? 'כולל תקלה דחופה' : 'תקלות פתוחות בבניין', icon: CircleAlert, color: 'yellow' },
@@ -58,9 +59,10 @@ export default function OverviewPage({ building, currentMonthPayments, monthlyIn
       <section className="panel activity-panel">
         <div className="panel-heading"><div><h2>תנועות אחרונות</h2><p>התשלומים שהתקבלו מהדיירים</p></div><button className="text-link" onClick={() => onNavigate('payments')}>כל התשלומים<ChevronLeft size={15} /></button></div>
         {recentPayments.length ? <div className="table-wrap"><table><thead><tr><th>דייר / דירה</th><th>תאריך</th><th>סטטוס</th><th>סכום</th></tr></thead><tbody>{recentPayments.map((payment) => {
-          const tenant = building.tenants.find((item) => item.id === payment.tenantId)
-          return <tr key={payment.id}><td><span className="table-primary">{getTenantName(payment.tenantId)}</span><span className="table-secondary">{tenant ? getApartmentName(tenant.apartmentId) : '—'}</span></td><td>{formatDate(payment.date)}</td><td><StatusBadge value={payment.status} /></td><td className="money-cell">{formatMoney(payment.amount)}</td></tr>
-        })}</tbody></table></div> : <EmptyState icon={Wallet} title="עדיין אין תשלומים" text="כשתירשם גבייה, היא תופיע כאן." action="רישום תשלום" onClick={() => onAdd('payments')} disabled={!building.tenants.length} />}
+          const apartmentLabel = payment.apartmentId === BUILDING_PAYMENT_LOCATION ? 'בניין' : getApartmentName(payment.apartmentId)
+          const payerLabel = payment.personId ? getPersonName(payment.personId) : payment.apartmentId === BUILDING_PAYMENT_LOCATION ? 'בניין' : '—'
+          return <tr key={payment.id}><td><span className="table-primary">{payerLabel}</span><span className="table-secondary">{apartmentLabel}</span></td><td>{formatDate(payment.date)}</td><td><StatusBadge value={payment.status} /></td><td className="money-cell">{formatMoney(payment.amount)}</td></tr>
+        })}</tbody></table></div> : <EmptyState icon={Wallet} title="עדיין אין תשלומים" text="כשתירשם גבייה, היא תופיע כאן." action="רישום תשלום" onClick={() => onAdd('payments')} />}
       </section>
 
       <section className="panel issues-panel">

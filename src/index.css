@@ -175,9 +175,11 @@ td { height: 51px; padding: 7px 14px; border-top: 1px solid #f0f1ed; color: #777
 .row-action-cell { width: 74px; padding: 0 8px !important; }
 .row-action-cell-apartment { width: 102px; }
 .row-actions { display: flex; align-items: center; gap: 2px; }
-.row-view, .row-edit, .row-delete { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 5px; background: transparent; color: #8b958d; cursor: pointer; opacity: .7; }
+.row-view, .row-edit, .row-payment, .row-delete { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 5px; background: transparent; color: #8b958d; cursor: pointer; opacity: .7; }
 .row-view:hover { color: #4c7183; background: #edf3f6; opacity: 1; }
 .row-edit:hover { color: #47765e; background: #edf3ee; opacity: 1; }
+.row-payment:hover { color: #4c7d83; background: #edf3f3; opacity: 1; }
+.row-payment:disabled { cursor: not-allowed; opacity: .35; }
 .row-delete:hover { color: #a65e50; background: #fbf0ec; opacity: 1; }
 .full-table tr:hover .row-view, .full-table tr:hover .row-edit, .full-table tr:hover .row-delete { opacity: 1; }
 
@@ -225,6 +227,10 @@ td { height: 51px; padding: 7px 14px; border-top: 1px solid #f0f1ed; color: #777
 .icon-button:hover { background: #f2f4ef; color: #3d6148; }
 .form-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px 12px; }
 .form-field { min-width: 0; display: grid; gap: 5px; }
+.form-field-checkbox-group { grid-column: 1 / -1; }
+.checkbox-group-options { display: flex; flex-wrap: wrap; gap: 7px 14px; }
+.checkbox-group-options label { display: inline-flex; align-items: center; gap: 6px; color: #59625b; font-size: 11px; cursor: pointer; }
+.checkbox-group-options input { accent-color: #47765e; }
 .form-field-toggle { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; min-height: 42px; padding: 0 10px; border: 1px solid #e5e8e1; border-radius: 5px; }
 .form-field-toggle > span { color: #656e67; font-size: 10px; font-weight: 500; }
 .form-field-toggle input[type='checkbox'] { position: relative; flex: none; width: 36px; height: 20px; margin: 0; padding: 0; appearance: none; border: 0; border-radius: 12px; background: #dfe3dd; cursor: pointer; transition: background .15s ease; }

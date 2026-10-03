@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createBuildingRecord, createUtilityPayment, loadBuilding, saveBuilding } from '../api/buildingApi'
-import type { Apartment, BuildingData, CollectionName, CollectionPage, Tenant, UtilityKind } from '../types'
-import { makeId, monthNow } from '../lib/formatters'
+import type { Apartment, BuildingData, CollectionName, CollectionPage, Person, Tenancy, UtilityKind } from '../types'
+import { makeId, monthNow, today } from '../lib/formatters'
 
 export function useBuildingData() {
   const [building, setBuilding] = useState<BuildingData>(loadBuilding)
@@ -20,19 +20,28 @@ export function useBuildingData() {
 
   function createApartmentsWithTenants(floors: number, apartmentsPerFloor: number) {
     const apartments: Apartment[] = []
-    const tenants: Tenant[] = []
+    const people: Person[] = []
+    const tenancies: Tenancy[] = []
 
     for (let floor = 1; floor <= floors; floor += 1) {
       for (let apartmentOnFloor = 0; apartmentOnFloor < apartmentsPerFloor; apartmentOnFloor += 1) {
         const number = String(apartments.length + 1)
         const id = makeId()
+        const personId = makeId()
         apartments.push({ id, number, floor: String(floor), rooms: '', size: '' })
-        tenants.push({
-          id: makeId(),
+        people.push({
+          id: personId,
           name: `דייר/ת דירה ${number}`,
           phone: '',
           email: '',
+          roles: [],
+        })
+        tenancies.push({
+          id: makeId(),
+          personId,
           apartmentId: id,
+          startDate: today(),
+          endDate: '',
           isOwner: false,
         })
       }
@@ -41,7 +50,8 @@ export function useBuildingData() {
     setBuilding((previous) => ({
       ...previous,
       apartments: [...previous.apartments, ...apartments],
-      tenants: [...previous.tenants, ...tenants],
+      people: [...previous.people, ...people],
+      tenancies: [...previous.tenancies, ...tenancies],
     }))
   }
 
@@ -79,8 +89,8 @@ export function useBuildingData() {
     setBuilding((previous) => ({ ...previous, [collection]: previous[collection].filter((record) => record.id !== id) }))
   }
 
-  function getTenantName(id: string) {
-    return building.tenants.find((tenant) => tenant.id === id)?.name || 'דייר לא ידוע'
+  function getPersonName(id: string) {
+    return building.people.find((person) => person.id === id)?.name || 'איש קשר לא ידוע'
   }
 
   function getApartmentName(id: string) {
@@ -88,5 +98,5 @@ export function useBuildingData() {
     return apartment ? `דירה ${apartment.number}` : 'שטח משותף'
   }
 
-  return { building, addRecord, createApartmentsWithTenants, updateRecord, updateMonthlyPaymentAmount, addUtilityPayment, updateUtilityPayment, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getTenantName, getApartmentName }
+  return { building, addRecord, createApartmentsWithTenants, updateRecord, updateMonthlyPaymentAmount, addUtilityPayment, updateUtilityPayment, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getPersonName, getApartmentName }
 }

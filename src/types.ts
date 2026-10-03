@@ -1,11 +1,31 @@
-export type Tenant = {
+export type PersonRole = 'externalTenant' | 'neighbor' | 'cityEmployee' | 'supplier' | 'other'
+
+export const personRoleLabels: Record<PersonRole, string> = {
+  externalTenant: 'דייר/ת בבניין אחר',
+  neighbor: 'שכן/ה',
+  cityEmployee: 'עובד/ת עירייה',
+  supplier: 'ספק/ית',
+  other: 'אחר',
+}
+
+export type Person = {
   id: string
   name: string
   phone: string
   email: string
+  roles: PersonRole[]
+}
+
+export type Tenancy = {
+  id: string
+  personId: string
   apartmentId: string
+  startDate: string
+  endDate: string
   isOwner: boolean
 }
+
+export type Tenant = Tenancy & Omit<Person, 'id'>
 
 export type Apartment = {
   id: string
@@ -15,9 +35,12 @@ export type Apartment = {
   size?: string
 }
 
+export const BUILDING_PAYMENT_LOCATION = 'building'
+
 export type Payment = {
   id: string
-  tenantId: string
+  personId: string
+  apartmentId: string
   fromMonth: string
   toMonth: string
   amount: number
@@ -32,6 +55,7 @@ export type Expense = {
   amount: number
   date: string
   vendor: string
+  supplierPersonId?: string
 }
 
 export type Issue = {
@@ -41,6 +65,7 @@ export type Issue = {
   date: string
   priority: 'רגילה' | 'דחופה'
   status: 'פתוחה' | 'בטיפול' | 'טופלה'
+  contactPersonId?: string
 }
 
 export type UtilityKind = 'water' | 'electricity'
@@ -59,7 +84,8 @@ export type ApartmentUtilities = Record<UtilityKind, UtilityPayment[]>
 
 export type BuildingData = {
   monthlyPaymentAmount: number
-  tenants: Tenant[]
+  people: Person[]
+  tenancies: Tenancy[]
   apartments: Apartment[]
   payments: Payment[]
   expenses: Expense[]
@@ -69,7 +95,7 @@ export type BuildingData = {
 
 export type CollectionName = Exclude<keyof BuildingData, 'utilities' | 'monthlyPaymentAmount'>
 
-export type BuildingRecord = Tenant | Apartment | Payment | Expense | Issue
+export type BuildingRecord = Person | Tenancy | Apartment | Payment | Expense | Issue
 
-export type Page = 'overview' | 'transactions' | 'tenants' | 'apartments' | 'payments' | 'expenses' | 'issues'
+export type Page = 'overview' | 'transactions' | 'contacts' | 'tenants' | 'apartments' | 'payments' | 'expenses' | 'issues'
 export type CollectionPage = Exclude<Page, 'overview' | 'transactions'>

@@ -9,14 +9,16 @@ import CollectionPageView from './pages/CollectionPage'
 import TransactionsPage from './pages/TransactionsPage'
 import { useBuildingData } from './hooks/useBuildingData'
 import { useNotice } from './hooks/useNotice'
+import { getTenantViews, isActiveTenancy } from './lib/tenantViews'
 import type { Apartment, BuildingRecord, CollectionPage, Page } from './types'
 
 export default function App() {
   const [page, setPage] = useState<Page>('overview')
-  const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord } | null>(null)
+  const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord; initialValues?: Record<string, string> } | null>(null)
   const [viewedApartment, setViewedApartment] = useState<Apartment | null>(null)
   const [apartmentSetupOpen, setApartmentSetupOpen] = useState(false)
   const [buildingSettingsOpen, setBuildingSettingsOpen] = useState(false)
+  const [quickPersonOpen, setQuickPersonOpen] = useState(false)
   const { notice, showNotice } = useNotice()
   const {
     building,
@@ -31,13 +33,13 @@ export default function App() {
     openIssues,
     monthlyIncome,
     monthlyExpenses,
-    getTenantName,
+    getPersonName,
     getApartmentName,
   } = useBuildingData()
 
   function openForm(target: CollectionPage) {
-    if ((target === 'payments' && building.tenants.length === 0) || (target === 'issues' && building.apartments.length === 0)) {
-      showNotice(target === 'payments' ? 'כדאי להוסיף דיירים לפני רישום תשלום' : 'כדאי להוסיף דירות לפני דיווח על תקלה')
+    if (target === 'issues' && building.apartments.length === 0) {
+      showNotice('כדאי להוסיף דירות לפני דיווח על תקלה')
       return
     }
     setModal({ page: target })
@@ -52,6 +54,15 @@ export default function App() {
   }
 
   function handleDelete(collection: Parameters<typeof deleteRecord>[0], id: string) {
+    if (collection === 'people' && (
+      building.tenancies.some((tenancy) => tenancy.personId === id)
+      || building.payments.some((payment) => payment.personId === id)
+      || building.expenses.some((expense) => expense.supplierPersonId === id)
+      || building.issues.some((issue) => issue.contactPersonId === id)
+    )) {
+      showNotice('לא ניתן למחוק איש קשר שמשויך לרשומות')
+      return
+    }
     if (!window.confirm('למחוק את הרשומה הזו?')) return
     deleteRecord(collection, id)
     showNotice('הרשומה הוסרה')
@@ -66,26 +77,29 @@ export default function App() {
         monthlyExpenses={monthlyExpenses}
         openIssues={openIssues}
         getApartmentName={getApartmentName}
-        getTenantName={getTenantName}
+        getPersonName={getPersonName}
         onNavigate={setPage}
         onAdd={openForm}
       /> : page === 'transactions' ? <TransactionsPage
         building={building}
-        getTenantName={getTenantName}
+        getPersonName={getPersonName}
+        getApartmentName={getApartmentName}
         onAdd={openForm}
       /> : <CollectionPageView
         page={page}
         building={building}
         getApartmentName={getApartmentName}
-        getTenantName={getTenantName}
+        getPersonName={getPersonName}
         onDelete={handleDelete}
         onEdit={(record) => setModal({ page, record })}
         onViewApartment={setViewedApartment}
+        onAddPayment={(apartmentId, personId) => setModal({ page: 'payments', initialValues: { apartmentId, personId } })}
         onAdd={() => openForm(page)}
         onCreateBuilding={() => setApartmentSetupOpen(true)}
       />}
     </AppLayout>
-    {modal && <RecordModal key={`${modal.page}-${modal.record?.id || 'new'}`} page={modal.page} building={building} monthlyPaymentAmount={building.monthlyPaymentAmount} record={modal.record} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
+    {modal && <RecordModal key={`${modal.page}-${modal.record?.id || 'new'}`} page={modal.page} building={building} monthlyPaymentAmount={building.monthlyPaymentAmount} record={modal.record} initialValues={modal.initialValues} onCreatePerson={() => setQuickPersonOpen(true)} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
+    {quickPersonOpen && <RecordModal key="quick-person" page="contacts" building={building} monthlyPaymentAmount={building.monthlyPaymentAmount} onClose={() => setQuickPersonOpen(false)} onSubmit={(values) => { addRecord('contacts', values); setQuickPersonOpen(false); showNotice('איש הקשר נוסף') }} />}
     {apartmentSetupOpen && <ApartmentSetupModal
       onClose={() => setApartmentSetupOpen(false)}
       onSubmit={(floors, apartmentsPerFloor) => {
@@ -102,8 +116,8 @@ export default function App() {
     {viewedApartment && <ApartmentDetailsModal
       key={viewedApartment.id}
       apartment={viewedApartment}
-      tenants={building.tenants.filter((tenant) => tenant.apartmentId === viewedApartment.id)}
-      committeePayments={building.payments.filter((payment) => building.tenants.some((tenant) => tenant.id === payment.tenantId && tenant.apartmentId === viewedApartment.id))}
+      tenants={getTenantViews(building).filter((tenant) => tenant.apartmentId === viewedApartment.id && isActiveTenancy(tenant))}
+      committeePayments={building.payments.filter((payment) => payment.apartmentId === viewedApartment.id)}
       utilities={building.utilities}
       onClose={() => setViewedApartment(null)}
       onAddUtilityPayment={(type, values) => addUtilityPayment(type, viewedApartment.id, values)}

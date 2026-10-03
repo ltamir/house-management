@@ -1,12 +1,13 @@
 import { ArrowDownLeft, ArrowUpLeft, Plus } from 'lucide-react'
 import EmptyState from '../components/EmptyState'
 import StatusBadge from '../components/StatusBadge'
-import type { BuildingData, CollectionPage } from '../types'
+import { BUILDING_PAYMENT_LOCATION, type BuildingData, type CollectionPage } from '../types'
 import { formatDate, formatMoney, formatMonthRange } from '../lib/formatters'
 
 type TransactionsPageProps = {
   building: BuildingData
-  getTenantName: (id: string) => string
+  getPersonName: (id: string) => string
+  getApartmentName: (id: string) => string
   onAdd: (page: CollectionPage) => void
 }
 
@@ -22,13 +23,13 @@ type LedgerEntry = {
   balance: number
 }
 
-export default function TransactionsPage({ building, getTenantName, onAdd }: TransactionsPageProps) {
+export default function TransactionsPage({ building, getPersonName, getApartmentName, onAdd }: TransactionsPageProps) {
   const chronological: LedgerEntry[] = [
     ...building.payments.map((payment) => ({
       id: `payment-${payment.id}`,
       date: payment.date,
-      description: getTenantName(payment.tenantId),
-      detail: `תשלום ועד הבית · ${formatMonthRange(payment.fromMonth, payment.toMonth)}`,
+      description: payment.personId ? getPersonName(payment.personId) : payment.apartmentId === BUILDING_PAYMENT_LOCATION ? 'תשלום מהבניין' : 'תשלום ללא דייר משויך',
+      detail: `${payment.apartmentId !== BUILDING_PAYMENT_LOCATION ? `${getApartmentName(payment.apartmentId)} · ` : ''}תשלום ועד הבית · ${formatMonthRange(payment.fromMonth, payment.toMonth)}`,
       kind: 'payment' as const,
       status: payment.status,
       amount: payment.amount,
@@ -39,7 +40,7 @@ export default function TransactionsPage({ building, getTenantName, onAdd }: Tra
       id: `expense-${expense.id}`,
       date: expense.date,
       description: expense.title,
-      detail: expense.category,
+      detail: `${expense.category}${expense.supplierPersonId ? ` · ${getPersonName(expense.supplierPersonId)}` : expense.vendor ? ` · ${expense.vendor}` : ''}`,
       kind: 'expense' as const,
       amount: expense.amount,
       balanceChange: -expense.amount,
