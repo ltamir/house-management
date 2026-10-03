@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { Building2, CalendarDays, ChevronLeft, House, Menu, Moon, Pencil, Plus, Sun } from 'lucide-react'
+import { Building2, CalendarDays, ChevronLeft, House, Menu, Moon, Palette, Pencil, Plus, Sun } from 'lucide-react'
 import { isCollectionPage, navigationItems, pageTitles, singularLabels } from '../config/recordForms'
 import { formatMoney } from '../lib/formatters'
 import type { CollectionPage, Page } from '../types'
@@ -7,6 +7,8 @@ import type { CollectionPage, Page } from '../types'
 type AppLayoutProps = {
   page: Page
   theme: 'light' | 'dark'
+  colorScheme: 'green' | 'blue'
+  onSelectColorScheme: (colorScheme: 'green' | 'blue') => void
   onToggleTheme: () => void
   openIssuesCount: number
   apartmentCount: number
@@ -17,7 +19,7 @@ type AppLayoutProps = {
   onEditBuilding: () => void
 }
 
-export default function AppLayout({ page, theme, onToggleTheme, openIssuesCount, apartmentCount, monthlyPaymentAmount, children, onNavigate, onAdd, onEditBuilding }: AppLayoutProps) {
+export default function AppLayout({ page, theme, colorScheme, onSelectColorScheme, onToggleTheme, openIssuesCount, apartmentCount, monthlyPaymentAmount, children, onNavigate, onAdd, onEditBuilding }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pageInfo = pageTitles[page]
 
@@ -57,7 +59,7 @@ export default function AppLayout({ page, theme, onToggleTheme, openIssuesCount,
         <header className="topbar">
           <button className="icon-button mobile-menu-button" aria-label="פתיחת תפריט" onClick={() => setMobileMenuOpen(true)}><Menu size={20} /></button>
           <div className="breadcrumb"><span>הבית שלנו</span><ChevronLeft size={14} /><strong>{pageInfo.title}</strong></div>
-          <div className="topbar-meta"><button type="button" className="theme-toggle" onClick={onToggleTheme} aria-label={theme === 'dark' ? 'מעבר למצב בהיר' : 'מעבר למצב כהה'} title={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'} aria-pressed={theme === 'dark'}>{theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}</button><span className="today-label"><CalendarDays size={15} />{new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}</span><span className="user-avatar">ו</span></div>
+          <div className="topbar-meta"><div className="color-scheme-buttons" role="group" aria-label="בחירת צבעי ממשק"><button type="button" className={`color-scheme-button color-scheme-green ${colorScheme === 'green' ? 'color-scheme-active' : ''}`} onClick={() => onSelectColorScheme('green')} aria-label="ערכת צבעים ירוקה" title="ערכת צבעים ירוקה" aria-pressed={colorScheme === 'green'}><Palette size={17} /></button><button type="button" className={`color-scheme-button color-scheme-blue ${colorScheme === 'blue' ? 'color-scheme-active' : ''}`} onClick={() => onSelectColorScheme('blue')} aria-label="ערכת צבעים כחולה" title="ערכת צבעים כחולה" aria-pressed={colorScheme === 'blue'}><Palette size={17} /></button></div><button type="button" className="theme-toggle" onClick={onToggleTheme} aria-label={theme === 'dark' ? 'מעבר למצב בהיר' : 'מעבר למצב כהה'} title={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'} aria-pressed={theme === 'dark'}>{theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}</button><span className="today-label"><CalendarDays size={15} />{new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}</span><span className="user-avatar">ו</span></div>
         </header>
 
         <div className={`content-area content-area-${page}`}>

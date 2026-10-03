@@ -20,8 +20,10 @@ type AppDialogState =
   | { type: 'confirm'; title: string; message: string; onConfirm: () => void }
 
 type Theme = 'light' | 'dark'
+type ColorScheme = 'green' | 'blue'
 
 const THEME_STORAGE_KEY = 'beitenu-theme'
+const COLOR_SCHEME_STORAGE_KEY = 'beitenu-color-scheme'
 
 function getInitialTheme(): Theme {
   try {
@@ -33,9 +35,18 @@ function getInitialTheme(): Theme {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
+function getInitialColorScheme(): ColorScheme {
+  try {
+    return localStorage.getItem(COLOR_SCHEME_STORAGE_KEY) === 'blue' ? 'blue' : 'green'
+  } catch {
+    return 'green'
+  }
+}
+
 export default function App() {
   const [page, setPage] = useState<Page>('overview')
   const [theme, setTheme] = useState<Theme>(getInitialTheme)
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(getInitialColorScheme)
   const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord; initialValues?: Record<string, string> } | null>(null)
   const [plannedExpenseModal, setPlannedExpenseModal] = useState<{ record?: PlannedExpense } | null>(null)
   const [viewedApartment, setViewedApartment] = useState<Apartment | null>(null)
@@ -52,6 +63,14 @@ export default function App() {
       return
     }
   }, [theme])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLOR_SCHEME_STORAGE_KEY, colorScheme)
+    } catch {
+      return
+    }
+  }, [colorScheme])
   const {
     building,
     addRecord,
@@ -135,8 +154,8 @@ export default function App() {
     })
   }
 
-  return <div className="app-root" data-theme={theme}>
-    <AppLayout page={page} theme={theme} onToggleTheme={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} openIssuesCount={openIssues.length} apartmentCount={building.apartments.length} monthlyPaymentAmount={building.monthlyPaymentAmount} onNavigate={setPage} onAdd={openForm} onEditBuilding={() => setBuildingSettingsOpen(true)}>
+  return <div className="app-root" data-theme={theme} data-color-scheme={colorScheme}>
+    <AppLayout page={page} theme={theme} colorScheme={colorScheme} onSelectColorScheme={setColorScheme} onToggleTheme={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} openIssuesCount={openIssues.length} apartmentCount={building.apartments.length} monthlyPaymentAmount={building.monthlyPaymentAmount} onNavigate={setPage} onAdd={openForm} onEditBuilding={() => setBuildingSettingsOpen(true)}>
       {page === 'planning' ? <PlanningPage
         monthlyPaymentAmount={building.monthlyPaymentAmount}
         plannedExpenses={building.plannedExpenses}
