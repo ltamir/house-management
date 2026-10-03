@@ -185,6 +185,10 @@ td { height: 51px; padding: 7px 14px; border-top: 1px solid #f0f1ed; color: #777
 
 .modal-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(28,37,30,.34); backdrop-filter: blur(3px); animation: fade-in .16s ease both; }
 .form-modal { width: min(440px,100%); max-height: min(690px,calc(100vh - 32px)); overflow: auto; padding: 21px 22px 17px; border: 1px solid #e8eae4; border-radius: 9px; background: #fff; box-shadow: 0 17px 65px rgba(33,45,35,.17); animation: modal-in .2s ease both; }
+.message-modal { width: min(390px,100%); }
+.dialog-message { color: #5f685f; font-size: 12px; line-height: 1.6; }
+.danger-button { min-height: 39px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; border: 1px solid #a85448; border-radius: 6px; color: #fff; background: #a85448; font-size: 11px; cursor: pointer; }
+.danger-button:hover { background: #91443a; }
 .building-settings-modal { width: min(400px,100%); }
 .building-setup-modal { width: min(480px,100%); }
 .building-setup-hint { display: flex; align-items: center; gap: 7px; margin-bottom: 17px; color: #828b82; font-size: 11px; }

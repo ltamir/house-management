@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import AppLayout from './components/AppLayout'
+import DialogModal from './components/DialogModal'
 import ApartmentDetailsModal from './components/ApartmentDetailsModal'
 import ApartmentSetupModal from './components/ApartmentSetupModal'
 import BuildingSettingsModal from './components/BuildingSettingsModal'
@@ -12,6 +13,10 @@ import { useNotice } from './hooks/useNotice'
 import { getTenantViews, isActiveTenancy } from './lib/tenantViews'
 import type { Apartment, BuildingRecord, CollectionPage, Page } from './types'
 
+type AppDialogState =
+  | { type: 'alert'; title: string; message: string }
+  | { type: 'confirm'; title: string; message: string; onConfirm: () => void }
+
 export default function App() {
   const [page, setPage] = useState<Page>('overview')
   const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord; initialValues?: Record<string, string> } | null>(null)
@@ -19,6 +24,7 @@ export default function App() {
   const [apartmentSetupOpen, setApartmentSetupOpen] = useState(false)
   const [buildingSettingsOpen, setBuildingSettingsOpen] = useState(false)
   const [quickPersonOpen, setQuickPersonOpen] = useState(false)
+  const [dialog, setDialog] = useState<AppDialogState | null>(null)
   const { notice, showNotice } = useNotice()
   const {
     building,
@@ -39,7 +45,7 @@ export default function App() {
 
   function openForm(target: CollectionPage) {
     if (target === 'issues' && building.apartments.length === 0) {
-      showNotice('כדאי להוסיף דירות לפני דיווח על תקלה')
+      setDialog({ type: 'alert', title: 'צריך להוסיף דירות', message: 'כדאי להוסיף דירות לפני דיווח על תקלה.' })
       return
     }
     setModal({ page: target })
@@ -60,12 +66,24 @@ export default function App() {
       || building.expenses.some((expense) => expense.supplierPersonId === id)
       || building.issues.some((issue) => issue.contactPersonId === id)
     )) {
-      showNotice('לא ניתן למחוק איש קשר שמשויך לרשומות')
+      setDialog({ type: 'alert', title: 'לא ניתן למחוק איש קשר', message: 'איש הקשר משויך לרשומות. הסירו או עדכנו את הקישורים לפני המחיקה.' })
       return
     }
-    if (!window.confirm('למחוק את הרשומה הזו?')) return
-    deleteRecord(collection, id)
-    showNotice('הרשומה הוסרה')
+    setDialog({
+      type: 'confirm',
+      title: 'מחיקת רשומה',
+      message: 'למחוק את הרשומה הזו?',
+      onConfirm: () => {
+        deleteRecord(collection, id)
+        showNotice('הרשומה הוסרה')
+      },
+    })
+  }
+
+  function confirmDialog() {
+    if (!dialog || dialog.type !== 'confirm') return
+    dialog.onConfirm()
+    setDialog(null)
   }
 
   return <>
@@ -123,6 +141,7 @@ export default function App() {
       onAddUtilityPayment={(type, values) => addUtilityPayment(type, viewedApartment.id, values)}
       onUpdateUtilityPayment={(type, id, values) => updateUtilityPayment(type, id, values)}
     />}
+    {dialog && <DialogModal type={dialog.type} title={dialog.title} message={dialog.message} onClose={() => setDialog(null)} onConfirm={dialog.type === 'confirm' ? confirmDialog : undefined} />}
     {notice && <div className="toast" role="status"><span aria-hidden="true">✓</span>{notice}</div>}
   </>
 }
