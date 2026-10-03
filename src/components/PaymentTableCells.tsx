@@ -1,5 +1,5 @@
 import StatusBadge from './StatusBadge'
-import { BUILDING_PAYMENT_LOCATION, type Payment } from '../types'
+import { BUILDING_PAYMENT_LOCATION, paymentMethodLabels, type Payment } from '../types'
 import { formatDate, formatMoney, formatMonthRange } from '../lib/formatters'
 
 type PaymentTableCellsProps = {
@@ -14,6 +14,7 @@ export default function PaymentTableCells({ payment, getPersonName, getApartment
     <td>{payment.apartmentId === BUILDING_PAYMENT_LOCATION ? 'בניין' : getApartmentName(payment.apartmentId)}</td>
     <td>{formatMonthRange(payment.fromMonth, payment.toMonth)}</td>
     <td>{formatDate(payment.date)}</td>
+    <td>{payment.paymentMethod ? paymentMethodLabels[payment.paymentMethod] : '—'}</td>
     <td><StatusBadge value={payment.status} /></td>
     <td className="money-cell">{formatMoney(payment.amount)}</td>
   </>

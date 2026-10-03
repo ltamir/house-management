@@ -10,7 +10,9 @@ import {
   Wrench,
   type LucideIcon,
 } from 'lucide-react'
-import type { CollectionName, CollectionPage, Page } from '../types'
+import { paymentMethodLabels, type CollectionName, type CollectionPage, type Page } from '../types'
+
+const paymentMethodOptions = Object.entries(paymentMethodLabels).map(([value, label]) => ({ value, label }))
 
 export type FieldDefinition = {
   name: string
@@ -78,6 +80,7 @@ export const recordForms: Record<CollectionPage, { collection: CollectionName; f
     { name: 'apartmentId', label: 'דירה / מיקום', options: [], required: true },
     { name: 'fromMonth', label: 'מתחילת חודש', type: 'month', required: true }, { name: 'toMonth', label: 'עד סוף חודש', type: 'month', required: true },
     { name: 'amount', label: 'סכום לתשלום (₪)', type: 'number', required: true }, { name: 'date', label: 'תאריך תשלום', type: 'date' },
+    { name: 'paymentMethod', label: 'אמצעי תשלום', options: paymentMethodOptions },
     { name: 'status', label: 'סטטוס', options: [{ value: 'שולם', label: 'שולם' }, { value: 'ממתין', label: 'ממתין' }] },
   ] },
   expenses: { collection: 'expenses', fields: [
@@ -85,6 +88,7 @@ export const recordForms: Record<CollectionPage, { collection: CollectionName; f
     { name: 'category', label: 'קטגוריה', options: ['ניקיון', 'תחזוקה', 'גינון', 'ביטוח', 'חשמל', 'אחר'].map((value) => ({ value, label: value })) },
     { name: 'amount', label: 'סכום (₪)', type: 'number', required: true }, { name: 'date', label: 'תאריך', type: 'date', required: true },
     { name: 'supplierPersonId', label: 'ספק/ית', options: [] }, { name: 'vendor', label: 'פרטי ספק / הערה' },
+    { name: 'paymentMethod', label: 'אמצעי תשלום', options: paymentMethodOptions },
   ] },
   issues: { collection: 'issues', fields: [
     { name: 'title', label: 'תיאור התקלה', required: true }, { name: 'apartmentId', label: 'מיקום / דירה', options: [], required: true },

@@ -37,6 +37,17 @@ export type Apartment = {
 
 export const BUILDING_PAYMENT_LOCATION = 'building'
 
+export type PaymentMethod = 'creditCard' | 'cash' | 'bit' | 'paybox' | 'cheque' | 'bankTransfer'
+
+export const paymentMethodLabels: Record<PaymentMethod, string> = {
+  creditCard: 'כרטיס אשראי',
+  cash: 'מזומן',
+  bit: 'ביט',
+  paybox: 'PayBox',
+  cheque: 'צ׳ק',
+  bankTransfer: 'העברה בנקאית',
+}
+
 export type Payment = {
   id: string
   personId: string
@@ -46,6 +57,7 @@ export type Payment = {
   amount: number
   date: string
   status: 'שולם' | 'ממתין'
+  paymentMethod?: PaymentMethod
 }
 
 export type Expense = {
@@ -56,6 +68,7 @@ export type Expense = {
   date: string
   vendor: string
   supplierPersonId?: string
+  paymentMethod?: PaymentMethod
 }
 
 export type PlannedExpense = {

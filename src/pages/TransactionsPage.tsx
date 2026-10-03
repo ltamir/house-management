@@ -1,7 +1,7 @@
 import { ArrowDownLeft, ArrowUpLeft, Plus } from 'lucide-react'
 import EmptyState from '../components/EmptyState'
 import StatusBadge from '../components/StatusBadge'
-import { BUILDING_PAYMENT_LOCATION, type BuildingData, type CollectionPage } from '../types'
+import { BUILDING_PAYMENT_LOCATION, paymentMethodLabels, type BuildingData, type CollectionPage } from '../types'
 import { formatDate, formatMoney, formatMonthRange } from '../lib/formatters'
 
 type TransactionsPageProps = {
@@ -29,7 +29,7 @@ export default function TransactionsPage({ building, getPersonName, getApartment
       id: `payment-${payment.id}`,
       date: payment.date,
       description: payment.personId ? getPersonName(payment.personId) : payment.apartmentId === BUILDING_PAYMENT_LOCATION ? 'תשלום מהבניין' : 'תשלום ללא דייר משויך',
-      detail: `${payment.apartmentId !== BUILDING_PAYMENT_LOCATION ? `${getApartmentName(payment.apartmentId)} · ` : ''}תשלום ועד הבית · ${formatMonthRange(payment.fromMonth, payment.toMonth)}`,
+      detail: `${payment.apartmentId !== BUILDING_PAYMENT_LOCATION ? `${getApartmentName(payment.apartmentId)} · ` : ''}תשלום ועד הבית · ${formatMonthRange(payment.fromMonth, payment.toMonth)}${payment.paymentMethod ? ` · ${paymentMethodLabels[payment.paymentMethod]}` : ''}`,
       kind: 'payment' as const,
       status: payment.status,
       amount: payment.amount,
@@ -40,7 +40,7 @@ export default function TransactionsPage({ building, getPersonName, getApartment
       id: `expense-${expense.id}`,
       date: expense.date,
       description: expense.title,
-      detail: `${expense.category}${expense.supplierPersonId ? ` · ${getPersonName(expense.supplierPersonId)}` : expense.vendor ? ` · ${expense.vendor}` : ''}`,
+      detail: `${expense.category}${expense.supplierPersonId ? ` · ${getPersonName(expense.supplierPersonId)}` : expense.vendor ? ` · ${expense.vendor}` : ''}${expense.paymentMethod ? ` · ${paymentMethodLabels[expense.paymentMethod]}` : ''}`,
       kind: 'expense' as const,
       amount: expense.amount,
       balanceChange: -expense.amount,
