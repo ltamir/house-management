@@ -1,4 +1,4 @@
-import type { Apartment, BuildingData, CollectionName, CollectionPage, Expense, Issue, Payment, Person, PersonRole, Tenancy, UtilityKind } from '../types'
+import type { Apartment, BuildingData, CollectionName, CollectionPage, Expense, Issue, Payment, Person, PersonRole, PlannedExpense, Tenancy, UtilityKind } from '../types'
 import { recordForms } from '../config/recordForms'
 import { makeId, today } from '../lib/formatters'
 import { BUILDING_PAYMENT_LOCATION } from '../types'
@@ -12,6 +12,7 @@ const emptyBuilding: BuildingData = {
   apartments: [],
   payments: [],
   expenses: [],
+  plannedExpenses: [],
   issues: [],
   utilities: { water: [], electricity: [] },
 }
@@ -54,6 +55,10 @@ export function loadBuilding(): BuildingData {
         return { ...migratedPayment, personId, apartmentId, fromMonth, toMonth }
       }) : [],
       expenses: Array.isArray(parsed.expenses) ? parsed.expenses : [],
+      plannedExpenses: Array.isArray(parsed.plannedExpenses) ? parsed.plannedExpenses.filter((expense): expense is PlannedExpense => Boolean(
+        expense && typeof expense.id === 'string' && typeof expense.title === 'string'
+        && [1, 2, 3, 4].includes(expense.intervalMonths) && Number.isFinite(expense.amount)
+      )) : [],
       issues: Array.isArray(parsed.issues) ? parsed.issues : [],
       utilities: {
         water: Array.isArray(parsed.utilities?.water) ? parsed.utilities.water : [],

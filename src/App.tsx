@@ -4,14 +4,16 @@ import DialogModal from './components/DialogModal'
 import ApartmentDetailsModal from './components/ApartmentDetailsModal'
 import ApartmentSetupModal from './components/ApartmentSetupModal'
 import BuildingSettingsModal from './components/BuildingSettingsModal'
+import PlannedExpenseModal from './components/PlannedExpenseModal'
 import RecordModal from './components/RecordModal'
 import OverviewPage from './pages/OverviewPage'
 import CollectionPageView from './pages/CollectionPage'
+import PlanningPage from './pages/PlanningPage'
 import TransactionsPage from './pages/TransactionsPage'
 import { useBuildingData } from './hooks/useBuildingData'
 import { useNotice } from './hooks/useNotice'
 import { getTenantViews, isActiveTenancy } from './lib/tenantViews'
-import type { Apartment, BuildingRecord, CollectionPage, Page } from './types'
+import type { Apartment, BuildingRecord, CollectionPage, Page, PlannedExpense } from './types'
 
 type AppDialogState =
   | { type: 'alert'; title: string; message: string }
@@ -20,6 +22,7 @@ type AppDialogState =
 export default function App() {
   const [page, setPage] = useState<Page>('overview')
   const [modal, setModal] = useState<{ page: CollectionPage; record?: BuildingRecord; initialValues?: Record<string, string> } | null>(null)
+  const [plannedExpenseModal, setPlannedExpenseModal] = useState<{ record?: PlannedExpense } | null>(null)
   const [viewedApartment, setViewedApartment] = useState<Apartment | null>(null)
   const [apartmentSetupOpen, setApartmentSetupOpen] = useState(false)
   const [buildingSettingsOpen, setBuildingSettingsOpen] = useState(false)
@@ -34,6 +37,9 @@ export default function App() {
     addUtilityPayment,
     updateUtilityPayment,
     updateMonthlyPaymentAmount,
+    addPlannedExpense,
+    updatePlannedExpense,
+    deletePlannedExpense,
     deleteRecord,
     currentMonthPayments,
     openIssues,
@@ -86,9 +92,35 @@ export default function App() {
     setDialog(null)
   }
 
+  function savePlannedExpense(values: Omit<PlannedExpense, 'id'>) {
+    if (!plannedExpenseModal) return
+    if (plannedExpenseModal.record) updatePlannedExpense(plannedExpenseModal.record.id, values)
+    else addPlannedExpense(values)
+    setPlannedExpenseModal(null)
+    showNotice(plannedExpenseModal.record ? 'התכנון עודכן' : 'ההוצאה נוספה לתכנון')
+  }
+
+  function requestDeletePlannedExpense(id: string) {
+    setDialog({
+      type: 'confirm',
+      title: 'מחיקת הוצאה מתוכננת',
+      message: 'למחוק את ההוצאה מהתכנון השנתי?',
+      onConfirm: () => {
+        deletePlannedExpense(id)
+        showNotice('ההוצאה הוסרה מהתכנון')
+      },
+    })
+  }
+
   return <>
     <AppLayout page={page} openIssuesCount={openIssues.length} apartmentCount={building.apartments.length} monthlyPaymentAmount={building.monthlyPaymentAmount} onNavigate={setPage} onAdd={openForm} onEditBuilding={() => setBuildingSettingsOpen(true)}>
-      {page === 'overview' ? <OverviewPage
+      {page === 'planning' ? <PlanningPage
+        monthlyPaymentAmount={building.monthlyPaymentAmount}
+        plannedExpenses={building.plannedExpenses}
+        onAdd={() => setPlannedExpenseModal({})}
+        onEdit={(record) => setPlannedExpenseModal({ record })}
+        onDelete={requestDeletePlannedExpense}
+      /> : page === 'overview' ? <OverviewPage
         building={building}
         currentMonthPayments={currentMonthPayments}
         monthlyIncome={monthlyIncome}
@@ -117,6 +149,7 @@ export default function App() {
       />}
     </AppLayout>
     {modal && <RecordModal key={`${modal.page}-${modal.record?.id || 'new'}`} page={modal.page} building={building} monthlyPaymentAmount={building.monthlyPaymentAmount} record={modal.record} initialValues={modal.initialValues} onCreatePerson={() => setQuickPersonOpen(true)} onClose={() => setModal(null)} onSubmit={handleSubmit} />}
+    {plannedExpenseModal && <PlannedExpenseModal key={plannedExpenseModal.record?.id || 'new-planned-expense'} expense={plannedExpenseModal.record} onClose={() => setPlannedExpenseModal(null)} onSubmit={savePlannedExpense} />}
     {quickPersonOpen && <RecordModal key="quick-person" page="contacts" building={building} monthlyPaymentAmount={building.monthlyPaymentAmount} onClose={() => setQuickPersonOpen(false)} onSubmit={(values) => { addRecord('contacts', values); setQuickPersonOpen(false); showNotice('איש הקשר נוסף') }} />}
     {apartmentSetupOpen && <ApartmentSetupModal
       onClose={() => setApartmentSetupOpen(false)}

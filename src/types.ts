@@ -58,6 +58,13 @@ export type Expense = {
   supplierPersonId?: string
 }
 
+export type PlannedExpense = {
+  id: string
+  title: string
+  intervalMonths: 1 | 2 | 3 | 4
+  amount: number
+}
+
 export type Issue = {
   id: string
   title: string
@@ -89,13 +96,14 @@ export type BuildingData = {
   apartments: Apartment[]
   payments: Payment[]
   expenses: Expense[]
+  plannedExpenses: PlannedExpense[]
   issues: Issue[]
   utilities: ApartmentUtilities
 }
 
-export type CollectionName = Exclude<keyof BuildingData, 'utilities' | 'monthlyPaymentAmount'>
+export type CollectionName = Exclude<keyof BuildingData, 'utilities' | 'monthlyPaymentAmount' | 'plannedExpenses'>
 
 export type BuildingRecord = Person | Tenancy | Apartment | Payment | Expense | Issue
 
-export type Page = 'overview' | 'transactions' | 'contacts' | 'tenants' | 'apartments' | 'payments' | 'expenses' | 'issues'
-export type CollectionPage = Exclude<Page, 'overview' | 'transactions'>
+export type Page = 'overview' | 'transactions' | 'planning' | 'contacts' | 'tenants' | 'apartments' | 'payments' | 'expenses' | 'issues'
+export type CollectionPage = Exclude<Page, 'overview' | 'transactions' | 'planning'>

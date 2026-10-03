@@ -2,6 +2,7 @@ import {
   DoorOpen,
   ArrowLeftRight,
   Contact,
+  Calculator,
   FileText,
   LayoutDashboard,
   Users,
@@ -23,6 +24,7 @@ export type FieldDefinition = {
 export const navigationItems: { id: Page; label: string; icon: LucideIcon }[] = [
   { id: 'overview', label: 'סקירה כללית', icon: LayoutDashboard },
   { id: 'transactions', label: 'תנועות', icon: ArrowLeftRight },
+  { id: 'planning', label: 'תכנון תקציב', icon: Calculator },
   { id: 'contacts', label: 'אנשי קשר', icon: Contact },
   { id: 'tenants', label: 'דיירים', icon: Users },
   { id: 'apartments', label: 'דירות', icon: DoorOpen },
@@ -34,6 +36,7 @@ export const navigationItems: { id: Page; label: string; icon: LucideIcon }[] = 
 export const pageTitles: Record<Page, { title: string; subtitle: string }> = {
   overview: { title: 'סקירה כללית', subtitle: 'הבית מתנהל טוב יותר כשכולם מעודכנים.' },
   transactions: { title: 'תנועות', subtitle: 'כל התקבולים וההוצאות, עם יתרה מצטברת.' },
+  planning: { title: 'תכנון תקציב', subtitle: 'תחזית שנתית להכנסות קבועות ולהוצאות מתוכננות.' },
   contacts: { title: 'אנשי קשר', subtitle: 'אנשים וספקים שעובדים עם הבניין.' },
   tenants: { title: 'הדיירים שלנו', subtitle: 'אנשי הקשר והדיירים בבניין.' },
   apartments: { title: 'הדירות בבניין', subtitle: 'תפוסה, דיירים ופרטי הדירות.' },
@@ -93,5 +96,5 @@ export const recordForms: Record<CollectionPage, { collection: CollectionName; f
 }
 
 export function isCollectionPage(page: Page): page is CollectionPage {
-  return page !== 'overview' && page !== 'transactions'
+  return page !== 'overview' && page !== 'transactions' && page !== 'planning'
 }

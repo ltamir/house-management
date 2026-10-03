@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createBuildingRecord, createUtilityPayment, loadBuilding, saveBuilding } from '../api/buildingApi'
-import type { Apartment, BuildingData, CollectionName, CollectionPage, Person, Tenancy, UtilityKind } from '../types'
+import type { Apartment, BuildingData, CollectionName, CollectionPage, Person, PlannedExpense, Tenancy, UtilityKind } from '../types'
 import { makeId, monthNow, today } from '../lib/formatters'
 
 export function useBuildingData() {
@@ -59,6 +59,18 @@ export function useBuildingData() {
     setBuilding((previous) => ({ ...previous, monthlyPaymentAmount: amount }))
   }
 
+  function addPlannedExpense(values: Omit<PlannedExpense, 'id'>) {
+    setBuilding((previous) => ({ ...previous, plannedExpenses: [...previous.plannedExpenses, { ...values, id: makeId() }] }))
+  }
+
+  function updatePlannedExpense(id: string, values: Omit<PlannedExpense, 'id'>) {
+    setBuilding((previous) => ({ ...previous, plannedExpenses: previous.plannedExpenses.map((expense) => expense.id === id ? { ...values, id } : expense) }))
+  }
+
+  function deletePlannedExpense(id: string) {
+    setBuilding((previous) => ({ ...previous, plannedExpenses: previous.plannedExpenses.filter((expense) => expense.id !== id) }))
+  }
+
   function updateRecord(page: CollectionPage, id: string, values: Record<string, string>) {
     const { collection, record } = createBuildingRecord(page, values, id)
     setBuilding((previous) => ({
@@ -98,5 +110,5 @@ export function useBuildingData() {
     return apartment ? `דירה ${apartment.number}` : 'שטח משותף'
   }
 
-  return { building, addRecord, createApartmentsWithTenants, updateRecord, updateMonthlyPaymentAmount, addUtilityPayment, updateUtilityPayment, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getPersonName, getApartmentName }
+  return { building, addRecord, createApartmentsWithTenants, updateRecord, updateMonthlyPaymentAmount, addPlannedExpense, updatePlannedExpense, deletePlannedExpense, addUtilityPayment, updateUtilityPayment, deleteRecord, currentMonthPayments, openIssues, monthlyIncome, monthlyExpenses, getPersonName, getApartmentName }
 }
