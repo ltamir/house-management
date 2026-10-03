@@ -17,7 +17,7 @@ type CollectionPageProps = {
   onDelete: (collection: CollectionName, id: string) => void
   onEdit: (record: BuildingRecord) => void
   onViewApartment: (apartment: Apartment) => void
-  onAddPayment: (apartmentId: string, tenantId: string) => void
+  onAddPayment: (apartmentId: string, personId: string) => void
   onAdd: () => void
   onCreateBuilding: () => void
 }
@@ -30,7 +30,7 @@ export default function CollectionPageView({ page, building, getApartmentName, g
   const query = search.trim().toLocaleLowerCase('he')
   const filtered = rows.filter((row) => {
     const names: Record<CollectionPage, string> = {
-      contacts: `${(row as Person).name} ${(row as Person).phone} ${(row as Person).email} ${(row as Person).roles.map((role) => personRoleLabels[role]).join(' ')}`,
+      contacts: `${(row as Person).name} ${(row as Person).phone} ${(row as Person).email} ${((row as Person).roles || []).map((role) => personRoleLabels[role]).join(' ')}`,
       tenants: `${getPersonName((row as Tenancy).personId)} ${getApartmentName((row as Tenancy).apartmentId)} ${(row as Tenancy).startDate} ${(row as Tenancy).endDate}`,
       apartments: 'דירה ' + (row as Apartment).number + ' ' + (row as Apartment).floor,
       payments: getPersonName((row as Payment).personId) + ' ' + ((row as Payment).apartmentId === BUILDING_PAYMENT_LOCATION ? 'בניין' : getApartmentName((row as Payment).apartmentId)) + ' ' + (row as Payment).fromMonth + ' ' + (row as Payment).toMonth,
